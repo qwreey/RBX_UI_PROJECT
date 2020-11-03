@@ -14,6 +14,14 @@ end
 do 
 	local resource = script:FindFirstChild("resource")
 	if resource then
+		if resource:IsA("ModuleScript") then
+			local Items = require(resource)
+			for _,Item in pairs(Items:GetChildren()) do
+				Item.Parent = script
+			end
+			Items:Destroy()
+		end
+		
 		for _,Item in pairs(resource:GetChildren()) do
 			Item.Parent = script
 		end
@@ -1398,7 +1406,7 @@ function module.IndeterminateCircle_New(Parent)
 --			PreLoad:PreloadAsync(Obj.Holder:GetChildren())
 --		end))
 --	end
-	local AnimationId = require(script.Class_IndeterminateCircle.ImageID)
+	local AnimationId = require(script.IndeterminateCircleImageIDs)
 	
 	local Data = {
 		Disabled = false;
@@ -3437,7 +3445,6 @@ function module.TextField_New(Parent)
 		return Ripple
 	end
 	
-	
 	local function SetStyle(Value)
 		local StyleFolder = script.Class_TextField.Style:FindFirstChild(Value)
 		if StyleFolder == nil then
@@ -3454,6 +3461,7 @@ function module.TextField_New(Parent)
 				end
 			end
 		end
+		
 		for _,StyleObj in pairs(StyleFolder:GetChildren()) do
 			local New = StyleObj:Clone()
 			if New:IsA("Frame") or New:IsA("ImageLabel") or New:IsA("TextLabel") then
@@ -3474,7 +3482,6 @@ function module.TextField_New(Parent)
 	end
 	SetStyle("Text")
 	
-	
 	local function FocuseChanged()
 		local Focused = Obj:IsFocused()
 		local OnText = Obj.Text ~= ""
@@ -3493,7 +3500,12 @@ function module.TextField_New(Parent)
 		
 		--Ripple
 		local Ripple = GetRipple()
-		Ripple:TweenSize(UDim2.new(Data.Error and 1 or (Focused and 1 or 0),0,1,1),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,Outlined and 0 or(0.2/Data.Speed),true,nil)
+		if Obj.Parent ~= nil then
+			Ripple:TweenSize(UDim2.new(Data.Error and 1 or (Focused and 1 or 0),0,1,1),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,Outlined and 0 or(0.2/Data.Speed),true,nil)
+		else
+			Ripple.Size = UDim2.new(Data.Error and 1 or (Focused and 1 or 0),0,1,1)
+		end
+		
 		Ripple.BackgroundColor3 = Data.Error and Data.ErrorColor or (Outlined and Data.OffColor or Data.OnColor)
 		local RippleEffect = Tween:Create(Ripple,TweenInfo.new(0.2/Data.Speed,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),
 			{BackgroundColor3 = Data.Error and Data.ErrorColor or (Focused and Data.OnColor or Data.OffColor);}
@@ -3511,7 +3523,11 @@ function module.TextField_New(Parent)
 					BarEffect:Destroy()
 				end)
 			end
-			Obj.TopBarR:TweenSize(UDim2.new(1,Open and -PlaceholderSize.X or 8,0,2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,(0.2/Data.Speed)-0.05,true,nil)
+			if Obj.Parent ~= nil then
+				Obj.TopBarR:TweenSize(UDim2.new(1,Open and -PlaceholderSize.X or 8,0,2),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,(0.2/Data.Speed)-0.05,true,nil)
+			else
+				Obj.TopBarR.Size = UDim2.new(1,Open and -PlaceholderSize.X or 8,0,2)
+			end
 		end
 		
 		delay(0.2/Data.Speed,function()
@@ -3525,11 +3541,11 @@ function module.TextField_New(Parent)
 		TextChanged:Fire(Obj.Text)
 		FireChanged("Text",Obj.Text)
 		if not Obj:IsFocused() then
-			if Obj.Parent ~= nil then
-				FocuseChanged()
-			end
+			FocuseChanged()
 		end
 	end)
+	FocuseChanged()
+	
 	Obj:GetPropertyChangedSignal("SelectionStart"):Connect(function()
 		FireChanged("SelectionStart",Obj.SelectionStart)
 	end)
