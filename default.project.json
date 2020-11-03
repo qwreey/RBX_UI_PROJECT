@@ -1,0 +1,24 @@
+{
+	"name": "ADMIN_Project",
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$className": "ReplicatedStorage",
+			"rojo": {
+				"$className": "Folder",
+				"AdvancedTween": {
+					"$path": "AdvancedTween"
+				},
+				"UIDragger": {
+					"$path": "UIDragger"
+				},
+				"UIResizer": {
+					"$path": "UIResizer"
+				},
+				"MaterialUI": {
+					"$path": "MaterialUI"
+				}
+			}
+		}
+	}
+}
