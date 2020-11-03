@@ -1,5 +1,28 @@
 --[[
-	Var 1.15
+	THIS IS ONLY WORKING ON Global ZIndex Behavior,
+	if use this in Sibling ZIndex Behavior, this is will break
+	
+	Component Info (DOC)
+	https://sites.google.com/view/rbx-material-ui/component
+]]
+
+if not script then
+	error("This lua module is only working on roblox")
+end
+
+-- init
+do 
+	local resource = script:FindFirstChild("resource")
+	if resource then
+		for _,Item in pairs(resource:GetChildren()) do
+			Item.Parent = script
+		end
+		resource:Destroy()
+	end
+end
+
+--[[
+	Var 1.18
 	
 	Log : 
 		1.15
