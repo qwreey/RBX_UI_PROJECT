@@ -3758,6 +3758,9 @@ function module.TextField_New(Parent)
 				return
 			end
 			Data.OffColor = Value
+			if Obj:FindFirstChild("Bar") then
+				Obj.Bar.BackgroundColor3 = Value
+			end
 			FocuseChanged()
 		end;
 		OnColor3 = function(Value)
