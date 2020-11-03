@@ -1,27 +1,4 @@
 --[[
-	THIS IS ONLY WORKING ON Global ZIndex Behavior,
-	if use this in Sibling ZIndex Behavior, this is will break
-	
-	Component Info (DOC)
-	https://sites.google.com/view/rbx-material-ui/component
-]]
-
-if not script then
-    error("This lua module is only working on roblox")
-end
-
--- init
-do 
-    local resource = script:FindFirstChild("resource")
-    if resource then
-        for _,Item in pairs(resource:GetChildren()) do
-            Item.Parent = script
-        end
-        resource:Destroy()
-    end
-end
-
---[[
 	Var 1.15
 	
 	Log : 
@@ -68,7 +45,6 @@ end
 	Todo : support button touch input
 	Todo : support GamePad input
 ]]
-
 local Class = require(script.Module.Class)
 local GetRippleSize = require(script.Module.GetRippleSize)
 local Round = require(script.Module.Round)
@@ -525,6 +501,10 @@ function module.IconButton_New(Parent)
 	local Ripple
 	
 	local function PlayRipple()
+		if Obj.Parent == nil then
+			return
+		end
+		
 		Ripple = script.Class_Ripple.Ripple:Clone()
 		Ripple.ZIndex = Obj.ZIndex
 		Ripple.Parent = Obj
@@ -1110,8 +1090,13 @@ function module.Silder_New(Parent)
 		end
 		--TODO : Bug fix need!
 		local NewValue = Data.Value
-		Point:TweenPosition(UDim2.new(NewValue/Data.Max,0,0.5,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.1,true,nil)
-		Back:TweenSize(UDim2.new(NewValue/Data.Max,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.1,true,nil)
+		if Obj.Parent ~= nil then
+			Point:TweenPosition(UDim2.new(NewValue/Data.Max,0,0.5,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.1,true,nil)
+			Back:TweenSize(UDim2.new(NewValue/Data.Max,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.1,true,nil)
+		else
+			Point.Position = UDim2.new(NewValue/Data.Max,0,0.5,0)
+			Back.Size = UDim2.new(NewValue/Data.Max,0,1,0)
+		end
 		Point.ValueLabel.Text.Text = NewValue * Data.ValueLabelMultiply
 		ValueChanged:Fire(NewValue)
 		FireChanged("Value",NewValue)
@@ -1747,6 +1732,14 @@ function module.IndeterminateProgress_New(Parent)
 		if Data == nil or Data.Disabled then
 			return
 		end
+		if Obj.Parent == nil then
+			while true do
+				Obj:GetPropertyChangedSignal("Parent"):Wait()
+				if Obj.Parent ~= nil then
+					break
+				end
+			end
+		end
 		coroutine.resume(coroutine.create(function()
 			Two = false
 			Index = Index+1
@@ -1870,7 +1863,11 @@ function module.LinearProgress_New(Parent)
 		if Data == nil then
 			return
 		end
-		Obj.bar:TweenSize(UDim2.new(Data.Value / Data.Max,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.3/Data.Speed,true,nil)
+		if Obj.Parent ~= nil then
+			Obj.bar:TweenSize(UDim2.new(Data.Value / Data.Max,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Quart,0.3/Data.Speed,true,nil)
+		else
+			Obj.bar.Size = UDim2.new(Data.Value / Data.Max,0,1,0)
+		end
 	end
 	
 	local Properties = Class:MakeDictionary({
@@ -2266,6 +2263,10 @@ function module.CheckBox_New(Parent)
 	local Ripple
 	
 	local function PlayRipple()
+		if Obj.Parent == nil then
+			return
+		end
+		
 		Ripple = script.Class_Ripple.Ripple:Clone()
 		Ripple.ZIndex = Obj.ZIndex + 1
 		Ripple.Parent = Obj
@@ -2320,7 +2321,7 @@ function module.CheckBox_New(Parent)
 		SetColor(Data.Value)
 		local Time = 0.15/Data.Speed
 		
-		local Error,Text pcall(function()
+		if Obj.Parent ~= nil then
 			Obj.Side.R:TweenSize(UDim2.new(0.4,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,Time,true,nil)
 			Obj.Side.L:TweenSize(UDim2.new(0.4,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,Time,true,nil)
 			Obj.Side.T:TweenSize(UDim2.new(1,0,0.4,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,Time,true,nil)
@@ -2338,8 +2339,7 @@ function module.CheckBox_New(Parent)
 				Obj.Side.B:TweenSize(UDim2.new(1,0,0,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,Time,true,nil)
 				Obj.Box:TweenSize(UDim2.new(1,0,1,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,Time,true,nil)
 			end)
-		end)
-		if Text == "Can only tween objects in the workspace" then
+		else
 			Obj.Side.R.Size = UDim2.new(0,0,1,0)
 			Obj.Side.L.Size = UDim2.new(0,0,1,0)
 			Obj.Side.T.Size = UDim2.new(1,0,0,0)
@@ -2524,6 +2524,14 @@ function module.Pointing_New(Parent)
 		Delay = 1;
 	}
 	local function Play()
+		if Obj.Parent == nil then
+			while true do
+				Obj:GetPropertyChangedSignal("Parent"):Wait()
+				if Obj.Parent ~= nil then
+					break
+				end
+			end
+		end
 		coroutine.resume(coroutine.create(function()
 			while true do
 				if not Obj:FindFirstChild("Pointer") then
@@ -2671,13 +2679,23 @@ function module.TreeView_New(Parent)
 		}
 	)
 	local function DoOpen()
-		IcoOn:Play()
-		Obj:TweenSize(UDim2.new(1, 0, 0, ListLayOut.AbsoluteContentSize.Y+Obj.Lable.Size.Y.Offset),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.2,true,nil)
+		if Obj.Parent ~= nil then
+			IcoOn:Play()
+			Obj:TweenSize(UDim2.new(1, 0, 0, ListLayOut.AbsoluteContentSize.Y+Obj.Lable.Size.Y.Offset),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.2,true,nil)
+		else
+			Obj.Szie = UDim2.new(1, 0, 0, ListLayOut.AbsoluteContentSize.Y+Obj.Lable.Size.Y.Offset)
+			LableOpen.Rotation = 0
+		end
 		Open = true
 	end
 	local function DoClose()
-		IcoOff:Play()
-		Obj:TweenSize(UDim2.new(1, 0, 0, 22),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.2,true,nil)
+		if Obj.Parent ~= nil then
+			IcoOff:Play()
+			Obj:TweenSize(UDim2.new(1, 0, 0, 22),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.2,true,nil)
+		else
+			Obj.Szie = UDim2.new(1, 0, 0, 22)
+			LableOpen.Rotation = -90
+		end
 		Open = false
 	end
 	local function ItemChange()
@@ -3375,7 +3393,6 @@ function module.TextField_New(Parent)
 	}
 	local OutlinedBars = {"LBar","RBar","TopBarL","TopBarR"}
 	
-	
 	local Ripple
 	local function GetRipple()
 		Ripple = Ripple or Instance.new("Frame")
@@ -3485,7 +3502,9 @@ function module.TextField_New(Parent)
 		TextChanged:Fire(Obj.Text)
 		FireChanged("Text",Obj.Text)
 		if not Obj:IsFocused() then
-			FocuseChanged()
+			if Obj.Parent ~= nil then
+				FocuseChanged()
+			end
 		end
 	end)
 	Obj:GetPropertyChangedSignal("SelectionStart"):Connect(function()
@@ -3893,6 +3912,10 @@ function module.Button_New(Parent)
 	end
 	
 	local function Ripple(Position)
+		if Obj.Parent == nil then
+			return
+		end
+		
 		local Size--[[,Pos]] = GetRippleSize:GetRippleSize(Obj,Mouse)
 		Size = Size + 4
 		local Time = (Size*0.006)/Data.Speed
