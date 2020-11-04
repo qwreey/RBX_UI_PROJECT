@@ -4930,6 +4930,32 @@ end
 local Global_Items = {}
 local AliasProperties = {}
 local AliasClass = {}
+local DefaultPropertyOverwrite = {
+	["Frame"] = {
+		BorderSizePixel = 0;
+	};
+	["TextLabel"] = {
+		BorderSizePixel = 0;
+	};
+	["TextBox"] = {
+		BorderSizePixel = 0;
+	};
+	["TextButton"] = {
+		BorderSizePixel = 0;
+	};
+	["ImageLabel"] = {
+		BorderSizePixel = 0;
+	};
+	["ImageButton"] = {
+		BorderSizePixel = 0;
+	};
+}
+function module:SetDefaultPropertyOverwrite(Table)
+	DefaultPropertyOverwrite = Table
+end
+function module:GetDefaultPropertyOverwrite()
+	return DefaultPropertyOverwrite
+end
 
 function module:SetClassAlias(Table)-- => table
 	if type(Table) ~= "table" then
@@ -5038,6 +5064,15 @@ function module.Create(ClassName,Properties,Children,Created)
 	local ClassName = AliasClass[ClassName] or ClassName
 	local IsRBXInstance = CreateFn == nil
 	local Obj = IsRBXInstance and Instance.new(ClassName) or CreateFn()
+
+	if DefaultPropertyOverwrite[ClassName] then
+		for PropertyName,Value in pairs(DefaultPropertyOverwrite[ClassName]) do
+			if Properties == nil or Properties[PropertyName] == nil then
+				Obj[PropertyName] = Value
+			end
+		end
+	end
+
 	if Properties ~= nil then
 		for i,v in pairs(Properties) do
 			if typeof(Obj[i]) == "RBXScriptSignal" then
