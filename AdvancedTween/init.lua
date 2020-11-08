@@ -197,6 +197,14 @@ function module:RunTween(Item,Data,Properties,Ended)
 	--Step = Run.Stepped:Connect()
 end
 
+function module:RunTweens(Items,Data,Properties,Ended)
+	local First = true
+	for _,Item in pairs(Items) do
+		module:RunTween(Item,Data,Properties,First and Ended)
+		First = false
+	end
+end
+
 function module:StopTween(Item)
 	module.PlayIndex[Item] = nil
 end
