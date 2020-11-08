@@ -126,7 +126,7 @@ local module = {
 		Second = "Second";
 		TextColor = "TextColor";
 		Deep = "Deep";
-	}
+	};
 	
 	CurrentTheme = "Dark";
 	Themes = {
