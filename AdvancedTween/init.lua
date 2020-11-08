@@ -22,7 +22,7 @@ end
 -- 즉, PlayIndex[Item][PropertyName] 과 같은 형태로 스택을 보관함,
 -- 기본적으로 KEY 인 개채가 사라지면, 더이상 접근할수 없게 되기 때문에 알아서
 -- gc 가 수거해감
-module.PlayIndex = {}
+module.PlayIndex = setmetatable({},{__mode = "k"})
 
 -- 값의 변화량을 가져오기 위한 함수들 지정, 그리고 그 방향을 지정하기 위한 Enum 정의
 module.EasingFunctions = EasingFunctions
@@ -92,10 +92,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 	local LastProperties = {}
 	for Property,_ in pairs(Properties) do
 		LastProperties[Property] = Item[Property]
-		if not module.PlayIndex[Item][Property] then
-			module.PlayIndex[Item][Property] = 0
-		end
-		module.PlayIndex[Item][Property] = module.PlayIndex[Item][Property] + 1
+		module.PlayIndex[Item][Property] = module.PlayIndex[Item][Property] ~= nil and module.PlayIndex[Item][Property] + 1 or 1
 		NowAnimationIndex[Property] = module.PlayIndex[Item][Property]
 	end
 	
@@ -105,8 +102,9 @@ function module:RunTween(Item,Data,Properties,Ended)
 	if Easing.Reverse then
 		Direction = Direction == "Out" and "In" or "Out"
 	end
-    
-	local Step = function()
+
+    local Step
+	Step = function()
 		-- 아에 멈추게 되는 경우
 		if module.PlayIndex[Item] == nil then
 			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
@@ -114,18 +112,18 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 		
 		-- 다른 트윈이 속성을 바꾸고 있다면(이후 트윈이) 그 속성을 건들지 않도록 없엠
-		local Len = 0
+		local StopByOther = true
 		for Property,Index in pairs(NowAnimationIndex) do
 			if Index ~= module.PlayIndex[Item][Property] then
 				LastProperties[Property] = nil
 				Properties[Property] = nil
 				NowAnimationIndex[Property] = nil
 			else
-				Len = Len + 1
+				StopByOther = false
 			end
 		end
 		-- 만약 다른 트윈이 지금 트윈하고 있는 속성을 모두 먹은경우 현재 트윈을 삭제함
-		if Len == 0 then
+		if StopByOther then
 			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			return
 		end
