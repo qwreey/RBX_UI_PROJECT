@@ -119,6 +119,14 @@ local module = {
 		};
 	};
 	Icons = nil; -- WIP
+	Colors = {
+		TopBar = "TopBar";
+		Background = "Background";
+		BackgroundHighLight = "BackgroundHighLight";
+		Second = "Second";
+		TextColor = "TextColor";
+		Deep = "Deep";
+	}
 	
 	CurrentTheme = "Dark";
 	Themes = {
