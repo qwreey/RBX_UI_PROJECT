@@ -80,13 +80,11 @@ function module:RunTween(Item,Data,Properties,Ended)
 	--Properties : 트윈할 속성과 목표값 예시 : 
 	--Data.Properties.Position = UDim2.new(1,0,1,0) 처럼 하면 Position 속성의 목표를 1,0,1,0 으로 지정
 	
-	
 	local Time      = Data.Time == nil and 1 or Data.Time
 	local Direction = Data.Direction or "Out"
 	
-	if not module.PlayIndex[Item] then
-		module.PlayIndex[Item] = {}
-	end
+	module.PlayIndex[Item] = module.PlayIndex[Item] or {}
+	
 	--module.ItemCount[Item] = module.ItemCount[Item] + 1
 	--local AnimationCount = module.ItemCount[Item]
 	
@@ -108,11 +106,10 @@ function module:RunTween(Item,Data,Properties,Ended)
 		Direction = Direction == "Out" and "In" or "Out"
 	end
     
-    local StepIndex = #BindedFunctions + 1
-    BindedFunctions[StepIndex] = function()
+	local Step = function()
 		-- 아에 멈추게 되는 경우
 		if module.PlayIndex[Item] == nil then
-			table.remove(BindedFunctions,StepIndex)
+			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			return
 		end
 		
@@ -129,7 +126,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 		-- 만약 다른 트윈이 지금 트윈하고 있는 속성을 모두 먹은경우 현재 트윈을 삭제함
 		if Len == 0 then
-			table.remove(BindedFunctions,StepIndex)
+			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			return
 		end
 		
@@ -140,7 +137,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 			for Property,_ in pairs(Properties) do
 				module.PlayIndex[Item][Property] = 0
 			end
-			table.remove(BindedFunctions,StepIndex)
+			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			Index = 1
 			if Ended then
 				Ended()
@@ -177,6 +174,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 			end
 		end
 	end
+	BindedFunctions[#BindedFunctions + 1] = Step
 	--local Step
 	--Step = Run.Stepped:Connect()
 end

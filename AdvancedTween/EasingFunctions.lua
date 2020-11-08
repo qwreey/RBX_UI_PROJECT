@@ -11,6 +11,13 @@ local Linear = {} do
 end
 EasingFunctions["Linear"] = Linear
 
+local Circle = {} do
+	Circle.Run = function(self,Index)
+		return 1-(Index^2)
+	end
+end
+EasingFunctions["Circle"] = Circle
+
 local Exp2 = {} do
 	local MinIndex = -4
 	local MaxIndex = 2
