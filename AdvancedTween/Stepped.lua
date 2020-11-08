@@ -10,10 +10,10 @@ local module = {}
 function module:BindStep(StepFunction)
     if IsRoblox then
         local RunService = game:GetService("RunService")
-        if not plugin then
-            RunService.Stepped:Connect(StepFunction)
-        else
+        if RunService:IsStudio() and RunService:IsEdit() then
             RunService.Heartbeat:Connect(StepFunction)
+        else
+            RunService.Stepped:Connect(StepFunction)
         end
     else
         -- do something here
