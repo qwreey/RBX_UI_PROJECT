@@ -5096,6 +5096,9 @@ function module.Create(ClassName,Properties,Children,Created)
 	end
 	if Children ~= nil then
 		for i,v in pairs(Children) do
+			if type(i) == "string" then
+				v.Name = i
+			end
 			v.Parent = type(Obj) == "table" and Obj.Holder or Obj
 		end
 	end
