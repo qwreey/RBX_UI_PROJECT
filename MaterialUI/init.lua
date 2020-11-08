@@ -4370,6 +4370,7 @@ function module.Button_New(Parent)
 		end;
 		Ripple = function(self,Position)
 			Ripple(Position)
+			UnRipple()
 		end;
 	}
 	
