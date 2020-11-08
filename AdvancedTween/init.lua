@@ -137,6 +137,15 @@ function module:RunTween(Item,Data,Properties,Ended)
 			for Property,_ in pairs(Properties) do
 				module.PlayIndex[Item][Property] = 0
 			end
+
+			local PlayIndexLen = 0
+			for _,_ in pairs(module.PlayIndex[Item]) do
+				PlayIndexLen = PlayIndexLen + 1
+			end
+			if PlayIndexLen == 0 then
+				module.PlayIndex[Item] = nil
+			end
+
 			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			Index = 1
 			if Ended then
