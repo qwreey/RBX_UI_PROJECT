@@ -60,19 +60,26 @@ function module:LerpProperties(Item,Old,New,Alpha)
 			continue
 		end
 		
-		if DefaultItems[typeof(OldValue)] then
+		local Type = typeof(OldValue)
+		if DefaultItems[Type] then
 			Item[Property] = module:Lerp(OldValue,NewValue,Alpha)
-		elseif typeof(OldValue) == "UDim2" then
+		elseif Type == "UDim2" then
 			Item[Property] = UDim2.new(
 				module:Lerp(OldValue.X.Scale ,NewValue.X.Scale ,Alpha),
 				module:Lerp(OldValue.X.Offset,NewValue.X.Offset,Alpha),
 				module:Lerp(OldValue.Y.Scale ,NewValue.Y.Scale ,Alpha),
 				module:Lerp(OldValue.Y.Offset,NewValue.Y.Offset,Alpha)
 			)
-		elseif typeof(OldValue) == "UDim" then
+		elseif Type == "UDim" then
 			Item[Property] = UDim.new(
 				module:Lerp(OldValue.Scale ,NewValue.Scale ),
 				module:Lerp(OldValue.Offset,NewValue.Offset)
+			)
+		elseif Type == "Color3" then
+			Item[Property] = Color3.fromRGB(
+				module:Lerp(OldValue.r*255,NewValue.r*255),
+				module:Lerp(OldValue.g*255,NewValue.g*255),
+				module:Lerp(OldValue.b*255,NewValue.b*255)
 			)
 		end
 	end
