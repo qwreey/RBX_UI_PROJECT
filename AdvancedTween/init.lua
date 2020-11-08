@@ -25,7 +25,18 @@ end
 module.PlayIndex = setmetatable({},{__mode = "k"})
 
 -- 값의 변화량을 가져오기 위한 함수들 지정, 그리고 그 방향을 지정하기 위한 Enum 정의
-module.EasingFunctions = EasingFunctions
+module.EasingFunctions = {
+	--// for Autocomplete
+	Linear = EasingFunctions.Linear; --// 직선
+	Circle = EasingFunctions.Circle; --// 사분원
+	Exp2 = EasingFunctions.Exp2; --// 덜 가파른 지수 그래프
+	Exp4 = EasingFunctions.Exp4; --// 더 가파른 지수 그래프
+	Exp2Max4 = EasingFunctions.Exp2Max4; --// 적당히 가파른 지수 그래프
+}
+for i,v in pairs(EasingFunctions) do
+	module.EasingFunctions[i] = v
+end
+
 module.EasingDirection = {
 	Out = "Out";
 	In  = "In" ;
