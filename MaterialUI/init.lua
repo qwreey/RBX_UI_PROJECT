@@ -5069,10 +5069,18 @@ function module:SetGlobalTheme(NewTheme)
 end
 
 function module.Create(ClassName,Properties,Children,Created)
+	local CustomClass
+	if type(ClassName) == "function" then
+		CustomClass = ClassName(Properties)
+	elseif type(ClassName) == "table" then
+		CustomClass = ClassName.new or ClassName.New
+		CustomClass = CustomClass(Properties)
+	end
+
 	local CreateFn = module[ClassName.."_New"]
 	local ClassName = AliasClass[ClassName] or ClassName
 	local IsRBXInstance = CreateFn == nil
-	local Obj = IsRBXInstance and Instance.new(ClassName) or CreateFn()
+	local Obj = CustomClass or (IsRBXInstance and Instance.new(ClassName) or CreateFn())
 
 	if DefaultPropertyOverwrite[ClassName] then
 		for PropertyName,Value in pairs(DefaultPropertyOverwrite[ClassName]) do
