@@ -5090,7 +5090,7 @@ function module.Create(ClassName,Properties,Children,Created)
 		end
 	end
 
-	if Properties ~= nil then
+	if Properties ~= nil and (not CustomClass) then
 		for i,v in pairs(Properties) do
 			if typeof(Obj[i]) == "RBXScriptSignal" then
 				Obj[i]:Connect(v)
