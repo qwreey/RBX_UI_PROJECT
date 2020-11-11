@@ -5068,6 +5068,16 @@ function module:SetGlobalTheme(NewTheme)
 	print("MaterialUI : ThemeSetting End!")
 end
 
+function module:CleanUp()
+	local GlobalItems = MaterialUI:GetGlobalItemsList()
+	for Index,Item in pairs(GlobalItems) do
+		if Item and Item.Destroy then
+			Item:Destroy()
+		end
+		GlobalItems[Index] = nil
+	end
+end
+
 function module.Create(ClassName,Properties,Children,Created)
 	local CustomClass
 	if type(ClassName) == "function" then
