@@ -5069,7 +5069,7 @@ function module:SetGlobalTheme(NewTheme)
 end
 
 function module:CleanUp()
-	local GlobalItems = MaterialUI:GetGlobalItemsList()
+	local GlobalItems = module:GetGlobalItemsList()
 	for Index,Item in pairs(GlobalItems) do
 		if Item and Item.Destroy then
 			Item:Destroy()
