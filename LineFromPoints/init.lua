@@ -16,7 +16,7 @@ function module:GetLineFromPoints(Point1, Point2, Thickness)
 	local UISize = UDim2.new(0,LineLen,0,Thickness or 1)
 	local UIPosition = UDim2.new(0,MidPoint.X-(LineLen-2),0,MidPoint.Y-0.5)
 	
-	return UISize,UIPosition
+	return UISize,UIPosition,Rotation
 end
 
 return module
