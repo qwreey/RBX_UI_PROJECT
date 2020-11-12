@@ -17,6 +17,12 @@
 				},
 				"MaterialUI": {
 					"$path": "MaterialUI"
+				},
+				"UIParticleEmitter": {
+					"$path": "UIParticleEmitter"
+				},
+				"LineFromPoints": {
+					"$path": "LineFromPoints"
 				}
 			}
 		}
