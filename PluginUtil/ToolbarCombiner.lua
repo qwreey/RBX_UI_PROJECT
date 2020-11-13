@@ -18,7 +18,7 @@ function module:CreateToolbar(Title,ID)
 			return New
 		end
 		
-		shared["qwreey.plugins.toolbarprovider"] = Tab
+		shared[ID] = Tab--"qwreey.plugins.toolbarprovider"] = Tab
 	end
 	
 	return Tab
