@@ -932,8 +932,8 @@ function module.ToolTip_New(Parent)
 		if Data == nil or Data.Disabled and Visible then
 			return
 		end
-		if TextFunction then
-			Data.ToolTipText = TextFunction()
+		if Data.TextFunction then
+			Data.ToolTipText = Data.TextFunction()
 		end
 		if Obj and (not Visible or (Data.ToolTipText ~= "")) then
 			Obj.TextLabel.Text = Data.ToolTipText
