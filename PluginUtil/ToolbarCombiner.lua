@@ -13,8 +13,16 @@ function module:CreateToolbar(Title,ID)
 		
 		function Tab:CreateButton(ID,...)
 			local New = Tab.Saved[ID] or NewToolbar:CreateButton(ID,...)
-			New.Parent = NewPlugin
-			Tab.Saved[ID] = New
+			
+			if Tab.Saved[ID] then
+				New.Icon = ""
+				wait()
+				New.Icon = select(2,...)
+			else
+				New.Parent = NewPlugin
+				Tab.Saved[ID] = New
+			end
+			
 			return New
 		end
 		
