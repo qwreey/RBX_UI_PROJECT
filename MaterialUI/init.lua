@@ -5087,10 +5087,15 @@ function module.Create(ClassName,Properties,Children,Created)
 		CustomClass = CustomClass(Properties)
 	end
 
-	local CreateFn = module[ClassName.."_New"]
-	local ClassName = AliasClass[ClassName] or ClassName
-	local IsRBXInstance = CreateFn == nil
-	local Obj = CustomClass or (IsRBXInstance and Instance.new(ClassName) or CreateFn())
+	local CreateFn
+	local ClassName
+
+	if type(ClassName) == "string" then
+		CreateFn = module[ClassName.."_New"]
+		ClassName = AliasClass[ClassName] or ClassName
+	end
+	
+	local Obj = CustomClass or (CreateFn == nil and Instance.new(ClassName) or CreateFn())
 
 	if DefaultPropertyOverwrite[ClassName] then
 		for PropertyName,Value in pairs(DefaultPropertyOverwrite[ClassName]) do
