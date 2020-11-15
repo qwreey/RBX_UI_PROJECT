@@ -5088,13 +5088,13 @@ function module.Create(ClassName,Properties,Children,Created)
 	end
 
 	local CreateFn
-	local ClassName
+	local ClassName = ClassName
 
-	if type(ClassName) == "string" then
+	if not CustomClass then
 		CreateFn = module[ClassName.."_New"]
 		ClassName = AliasClass[ClassName] or ClassName
 	end
-	
+
 	local Obj = CustomClass or (CreateFn == nil and Instance.new(ClassName) or CreateFn())
 
 	if DefaultPropertyOverwrite[ClassName] then
