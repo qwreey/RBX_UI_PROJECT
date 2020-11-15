@@ -910,6 +910,7 @@ function module.ToolTip_New(Parent)
 		Disabled = false;
 		ToolTipText = "";
 		Adornee = nil;
+		TextFunction = nil;
 	}
 	local ToolTipIndex = 0
 --	local function ToolTip(Visible)
@@ -930,6 +931,9 @@ function module.ToolTip_New(Parent)
 	local function ToolTip(Visible)
 		if Data == nil or Data.Disabled and Visible then
 			return
+		end
+		if TextFunction then
+			Data.ToolTipText = TextFunction()
 		end
 		if Obj and (not Visible or (Data.ToolTipText ~= "")) then
 			Obj.TextLabel.Text = Data.ToolTipText
@@ -968,6 +972,7 @@ function module.ToolTip_New(Parent)
 		"TextColor3";
 		
 		"BackgroundColor3";
+		"TextFunction";
 	})
 	local ReadOnly = Class:MakeDictionary({
 		"AbsolutePosition";
@@ -991,6 +996,9 @@ function module.ToolTip_New(Parent)
 		end;
 		Adornee = function()
 			return Data.Adornee
+		end;
+		TextFunction = function()
+			return Data.TextFunction
 		end;
 	}
 	local Setter = {
@@ -1035,6 +1043,9 @@ function module.ToolTip_New(Parent)
 		end;
 		TextColor3 = function(Value)
 			Obj.TextLabel.TextColor3 = Value
+		end;
+		TextFunction = function(Value)
+			Data.TextFunction = Value
 		end;
 	}
 	local Methods = {
