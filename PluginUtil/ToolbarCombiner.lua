@@ -18,6 +18,10 @@ function module:CreateToolbar(Title,ID)
 				New.Icon = ""
 				wait()
 				New.Icon = select(2,...)
+
+				New.Enabled = true
+				New.ClickableWhenViewportHidden = false
+				New:SetActive(false)
 			else
 				New.Parent = NewPlugin
 				Tab.Saved[ID] = New
