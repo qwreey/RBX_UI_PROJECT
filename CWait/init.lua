@@ -28,7 +28,9 @@ function module:Wait(Time,Function)
 		end
 		Run.Heartbeat:Wait()
 	end
-	Function(0)
+	if Function then
+		Function(0)
+	end
 end
 
 function module:Delay(Time,Function)
