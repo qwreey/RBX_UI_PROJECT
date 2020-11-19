@@ -26,6 +26,12 @@
 				},
 				"PluginUtil": {
 					"$path": "PluginUtil"
+				},
+				"CWait": {
+					"$path": "CWait"
+				},
+				"SectionsTextLable": {
+					"$path": "SectionsTextLable"
 				}
 			}
 		}
