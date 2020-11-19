@@ -1,3 +1,8 @@
+if not script then
+	warn("this module is only working on roblox lua")
+	return
+end
+
 --[[
 	Properties 
 		Text
