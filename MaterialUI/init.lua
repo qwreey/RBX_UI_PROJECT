@@ -5118,7 +5118,8 @@ function module.Create(ClassName,Properties,Children,Created)
 
 	if Properties ~= nil and (not CustomClass) then
 		for i,v in pairs(Properties) do
-			if typeof(Obj[i]) == "RBXScriptSignal" then
+			if i == "WhenCreated" then
+			elseif typeof(Obj[i]) == "RBXScriptSignal" then
 				Obj[i]:Connect(v)
 			elseif i == "Parent" then
 				Obj[i] = type(v) == "table" and v.Holder or v
@@ -5141,6 +5142,9 @@ function module.Create(ClassName,Properties,Children,Created)
 		coroutine.resume(coroutine.create(function()
 			Created(Obj)
 		end))
+	end
+	if Properties and Properties.WhenCreated then
+		Properties.WhenCreated(Obj)
 	end
 	Global_Items[#Global_Items + 1] = Obj
 	return Obj
