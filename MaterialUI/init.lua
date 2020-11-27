@@ -5146,7 +5146,9 @@ function module.Create(ClassName,Properties,Children,Created)
 	if Properties and Properties.WhenCreated then
 		Properties.WhenCreated(Obj)
 	end
-	Global_Items[#Global_Items + 1] = Obj
+	if (not Properties) or (not Properties.NotTagging) then
+		Global_Items[#Global_Items + 1] = Obj
+	end
 	return Obj
 end
 function module:Draw(GUI)
