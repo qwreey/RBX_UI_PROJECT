@@ -5118,7 +5118,8 @@ function module.Create(ClassName,Properties,Children,Created)
 
 	if Properties ~= nil and (not CustomClass) then
 		for i,v in pairs(Properties) do
-			if i == "WhenCreated" then
+			if i == "WhenCreated" or i == "NotTagging" then
+				-- bypass
 			elseif typeof(Obj[i]) == "RBXScriptSignal" then
 				Obj[i]:Connect(v)
 			elseif i == "Parent" then
