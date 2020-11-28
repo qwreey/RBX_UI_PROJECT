@@ -6,6 +6,8 @@
 	https://sites.google.com/view/rbx-material-ui/component
 ]]
 
+-- TODO : 다중 위젯 지원
+
 if not script then
 	error("This lua module is only working on roblox")
 end
@@ -93,6 +95,7 @@ local PreLoadLoadingC = false
 local DockWidget = false
 
 local module = {
+	script = script;
 	UserInputService = UserInputService;
 	Mouse = Mouse;
 	TotalInstance = Class.TotalInstance;
