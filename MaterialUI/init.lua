@@ -4972,6 +4972,10 @@ local DefaultPropertyOverwrite = {
 	["ImageButton"] = {
 		BorderSizePixel = 0;
 	};
+	["ScrollingFrame"] = {
+		BorderSizePixel = 0;
+		CanvasSize = UDim2.new(0,0,0,0);
+	};
 }
 function module:SetDefaultPropertyOverwrite(Table)
 	DefaultPropertyOverwrite = Table
