@@ -548,6 +548,8 @@ function module:UseDockWidget(Widget,NewMouse)
 	module.DockWidgetMouse[#module.DockWidgetMouse+1] = {Mouse = MouseMt, DockWidget = Widget}
 	
 	module:SetMouse(MouseMt)
+
+	return MouseMt
 end
 function module.IconButton_New(Parent)	
 	local This,FireChanged
