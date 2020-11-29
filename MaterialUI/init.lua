@@ -418,6 +418,8 @@ local module = {
 			};
 		};
 	};
+
+	DockWidgetMouse = {};
 }
 function module:SetMouse(NewMouse)
 	Mouse = NewMouse
@@ -434,6 +436,20 @@ end
 function module:GetColor(ColorName)
 	local ClassTheme = module.Themes[module.CurrentTheme]
 	return ClassTheme[ColorName]
+end
+--// 위젯용 마우스
+function module:GetMouseWithObject(Object)
+	if #module.DockWidgetMouse == 0 then
+		return Mouse
+	end
+
+	for _,Item in pairs(module.DockWidgetMouse) do
+		if Object:IsDescendantOf(Item.Widget) then
+			return Item.Mouse
+		end
+	end
+
+	return Mouse
 end
 function module:UseDockWidget(Widget,NewMouse)
 	local LastMouse = NewMouse or Mouse
@@ -522,6 +538,8 @@ function module:UseDockWidget(Widget,NewMouse)
 		end
 	end
 	
+	module.DockWidgetMouse[#module.DockWidgetMouse+1] = {Mouse = MouseMt, DockWidget = Widget}
+
 	module:SetMouse(MouseMt)
 end
 function module.IconButton_New(Parent)	
@@ -1159,7 +1177,7 @@ function module.Silder_New(Parent)
 		if Data == nil then
 			return
 		end
-		local Pos = Mouse.X - Obj.AbsolutePosition.X
+		local Pos = module:GetMouseWithObject(Obj).X - Obj.AbsolutePosition.X
 		if Pos < 0 or Pos == 0 then
 			Pos = 0
 		end
@@ -1185,7 +1203,7 @@ function module.Silder_New(Parent)
 				Point.ValueLabel:TweenSize(UDim2.new(0, 28,0, 40),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.12,true,nil)
 			end
 		--end
-		local MouseMoveConnect = Mouse.Move:Connect(function()
+		local MouseMoveConnect = module:GetMouseWithObject(Obj).Move:Connect(function()
 			if MouseisDown == true then
 				SetValueFromMousePos()
 			end
@@ -1589,7 +1607,7 @@ function module.Rippler_New(Parent)
 		Ripple = script.Class_Ripple.Ripple:Clone()
 		Ripple.ImageColor3 = Obj.BackgroundColor3
 		Ripple.ZIndex = Obj.ZIndex
-		local Size,Pos = GetRippleSize:GetRippleSize(Obj,Mouse)
+		local Size,Pos = GetRippleSize:GetRippleSize(Obj,module:GetMouseWithObject(Obj))
 		Size = Size + 6
 		Ripple.Position = Fix and UDim2.new(0.5,0,0.5,0) or UDim2.new(0,Pos.X,0,-Pos.Y)
 		Ripple.Parent = Obj
@@ -3981,6 +3999,7 @@ function module.Button_New(Parent)
 			return
 		end
 		
+		local Mouse = module:GetMouseWithObject(Obj)
 		local Size--[[,Pos]] = GetRippleSize:GetRippleSize(Obj,Mouse)
 		Size = Size + 4
 		local Time = (Size*0.006)/Data.Speed
