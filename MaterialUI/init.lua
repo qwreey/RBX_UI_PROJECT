@@ -418,7 +418,7 @@ local module = {
 			};
 		};
 	};
-
+	
 	DockWidgetMouse = {};
 }
 function module:SetMouse(NewMouse)
@@ -442,13 +442,13 @@ function module:GetMouseWithObject(Object)
 	if #module.DockWidgetMouse == 0 then
 		return Mouse
 	end
-
+	
 	for _,Item in pairs(module.DockWidgetMouse) do
-		if Object:IsDescendantOf(Item.Widget) then
+		if Object:IsDescendantOf(Item.DockWidget) then
 			return Item.Mouse
 		end
 	end
-
+	
 	return Mouse
 end
 function module:UseDockWidget(Widget,NewMouse)
@@ -478,20 +478,18 @@ function module:UseDockWidget(Widget,NewMouse)
 		Y = 0;
 		ViewSizeX = MouseHandle.AbsoluteSize.X;
 		ViewSizeY = MouseHandle.AbsoluteSize.Y;
-		IsPseudoMouse = true;
-		Obj = MouseHandle;
 	}
 	
 	MouseHandle.MouseMoved:Connect(function(X,Y)
 		PseudoMouse.X = X
 		PseudoMouse.Y = Y
 	end)
-		
+	
 	MouseHandle:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
 		PseudoMouse.ViewSizeX = MouseHandle.AbsoluteSize.X
 		PseudoMouse.ViewSizeY = MouseHandle.AbsoluteSize.Y
 	end)
-		
+	
 	MouseHandle.MouseButton1Down:Connect(function(X,Y)
 		Button1Down:Fire(X,Y)
 	end)
@@ -540,8 +538,13 @@ function module:UseDockWidget(Widget,NewMouse)
 		end
 	end
 	
+	for Index,Item in pairs(module.DockWidgetMouse) do
+		if Item.DockWidget == Widget then
+			table.remove(Index)
+		end
+	end
 	module.DockWidgetMouse[#module.DockWidgetMouse+1] = {Mouse = MouseMt, DockWidget = Widget}
-
+	
 	module:SetMouse(MouseMt)
 end
 function module.IconButton_New(Parent)	
@@ -937,21 +940,21 @@ function module.ToolTip_New(Parent)
 		TextFunction = nil;
 	}
 	local ToolTipIndex = 0
---	local function ToolTip(Visible)
---		if Data == nil or Data.Disabled and Visible then
---			return
---		end
---		if Obj and (not Visible or (Data.ToolTipText ~= "")) then
---			Obj.TextLabel.Text = Data.ToolTipText
---			Obj.Size = UDim2.new(0,Obj.TextLabel.TextBounds.X + 8,0,28)
---			Tween:Create(Obj,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),
---				{ImageTransparency = Visible and 0 or 1;}
---			):Play()
---			Tween:Create(Obj.TextLabel,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),
---				{TextTransparency = Visible and 0 or 1;}
---			):Play()
---		end
---	end
+	--	local function ToolTip(Visible)
+	--		if Data == nil or Data.Disabled and Visible then
+	--			return
+	--		end
+	--		if Obj and (not Visible or (Data.ToolTipText ~= "")) then
+	--			Obj.TextLabel.Text = Data.ToolTipText
+	--			Obj.Size = UDim2.new(0,Obj.TextLabel.TextBounds.X + 8,0,28)
+	--			Tween:Create(Obj,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),
+	--				{ImageTransparency = Visible and 0 or 1;}
+	--			):Play()
+	--			Tween:Create(Obj.TextLabel,TweenInfo.new(0.15,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),
+	--				{TextTransparency = Visible and 0 or 1;}
+	--			):Play()
+	--		end
+	--	end
 	local function ToolTip(Visible)
 		if Data == nil or Data.Disabled and Visible then
 			return
@@ -1197,13 +1200,13 @@ function module.Silder_New(Parent)
 			return
 		end
 		--if MouseisOn == true then
-			MouseisDown = true
-			SetValueFromMousePos()
-			Point:TweenSize(UDim2.new(0,14,0,14),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.2,true,nil)
-			Point.MouseDown:TweenSize(UDim2.new(3,0,3,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.12,true,nil)
-			if Data.ValueLabel == true then
-				Point.ValueLabel:TweenSize(UDim2.new(0, 28,0, 40),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.12,true,nil)
-			end
+		MouseisDown = true
+		SetValueFromMousePos()
+		Point:TweenSize(UDim2.new(0,14,0,14),Enum.EasingDirection.Out,Enum.EasingStyle.Quad,0.2,true,nil)
+		Point.MouseDown:TweenSize(UDim2.new(3,0,3,0),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.12,true,nil)
+		if Data.ValueLabel == true then
+			Point.ValueLabel:TweenSize(UDim2.new(0, 28,0, 40),Enum.EasingDirection.Out,Enum.EasingStyle.Linear,0.12,true,nil)
+		end
 		--end
 		local MouseMoveConnect = module:GetMouseWithObject(Obj).Move:Connect(function()
 			if MouseisDown == true then
@@ -1443,12 +1446,12 @@ function module.IndeterminateCircle_New(Parent)
 	local Obj = script.Class_IndeterminateCircle.IndeterminateCircle:Clone()
 	Obj.Parent = type(Parent) == "table" and Parent.Holder or Parent
 	
---	if not PreLoadLoadingC then
---		PreLoadLoadingC = true
---		coroutine.resume(coroutine.create(function()
---			PreLoad:PreloadAsync(Obj.Holder:GetChildren())
---		end))
---	end
+	--	if not PreLoadLoadingC then
+	--		PreLoadLoadingC = true
+	--		coroutine.resume(coroutine.create(function()
+	--			PreLoad:PreloadAsync(Obj.Holder:GetChildren())
+	--		end))
+	--	end
 	local AnimationId = require(script.IndeterminateCircleImageIDs)
 	
 	local Data = {
@@ -1779,12 +1782,12 @@ function module.Rippler_New(Parent)
 			Mouse2UpConnect:Disconnect()
 		end
 	end)
---	Obj.AncestryChanged:Connect(function()
---		if not Obj:IsDescendantOf(game) then
---			print("Parent is Destroyed")
---			This:Destroy()
---		end
---	end)
+	--	Obj.AncestryChanged:Connect(function()
+	--		if not Obj:IsDescendantOf(game) then
+	--			print("Parent is Destroyed")
+	--			This:Destroy()
+	--		end
+	--	end)
 	module:ClassTheme(This)
 	return This
 end
@@ -3359,10 +3362,10 @@ function module.Tabs_New(Parent)
 			TabButton.Name = "Tab_" .. tostring(TabIndex)
 			TabButton.Holder.TextLabel.Text = TabName
 			TabButton.Holder.TextLabel.TextColor3 = Data.TabTextColor3
---			TabButton.Holder.TextLabel.TextXAlignment = (TabIcon and
---				Enum.TextXAlignment.Left
---				or Enum.TextXAlignment.Center
---			)
+			--			TabButton.Holder.TextLabel.TextXAlignment = (TabIcon and
+			--				Enum.TextXAlignment.Left
+			--				or Enum.TextXAlignment.Center
+			--			)
 			
 			TabButton.Holder.Icon.Visible = TabIcon and true or false
 			TabButton.Holder.Icon.Image = TabIcon or ""
@@ -3534,10 +3537,10 @@ function module.TextField_New(Parent)
 		
 		--Placeholder
 		local PlaceholderEffect = Tween:Create(Obj.Placeholder,TweenInfo.new(0.2/Data.Speed,Enum.EasingStyle.Quad,Enum.EasingDirection.Out,0,false,0),{
-				TextColor3 = Data.Error and Data.ErrorColor or (Focused and Data.OnColor or Data.OffColor);
-				Position = Open and UDim2.new(0,0,0,-2) or UDim2.new(0,0,0.5,0);
-				TextSize = Open and Data.TextSize - 4 or Data.TextSize;
-			}
+			TextColor3 = Data.Error and Data.ErrorColor or (Focused and Data.OnColor or Data.OffColor);
+			Position = Open and UDim2.new(0,0,0,-2) or UDim2.new(0,0,0.5,0);
+			TextSize = Open and Data.TextSize - 4 or Data.TextSize;
+		}
 		)
 		PlaceholderEffect:Play()
 		
@@ -5054,18 +5057,18 @@ function SetByColors(ColorData,Item,Properties)
 	for ProPer,_ in pairs(Properties or (module.Themes[module.CurrentTheme][Item.ClassName])) do
 		local v = Item[ProPer]
 		if typeof(v) == "Color3" --and
---			(not (Item.ClassName == "ImageLabel" or Item.ClassName == "ImageButton")) or v ~= Color3.fromRGB(255,255,255)
+			--			(not (Item.ClassName == "ImageLabel" or Item.ClassName == "ImageButton")) or v ~= Color3.fromRGB(255,255,255)
 		then	
 			local ColorName = ColorData[("%s,%s,%s"):format(tostring(math.floor(v.r*255)),tostring(math.floor(v.g*255)),tostring(math.floor(v.b*255)))]
 			local NewColor = module.Themes[module.CurrentTheme][ColorName]
 			if NewColor then
 				Item[ProPer] = NewColor
 			end
---			for ColorName,OldColor in pairs(ColorData) do
---				if Item[ProPer] == OldColor then
---					Item[ProPer] = ColorName
---				end
---			end
+			--			for ColorName,OldColor in pairs(ColorData) do
+			--				if Item[ProPer] == OldColor then
+			--					Item[ProPer] = ColorName
+			--				end
+			--			end
 		end
 	end
 end
@@ -5126,17 +5129,17 @@ function module.Create(ClassName,Properties,Children,Created)
 		CustomClass = ClassName.new or ClassName.New
 		CustomClass = CustomClass(Properties)
 	end
-
+	
 	local CreateFn
 	local ClassName = ClassName
-
+	
 	if not CustomClass then
 		CreateFn = module[ClassName.."_New"]
 		ClassName = AliasClass[ClassName] or ClassName
 	end
-
+	
 	local Obj = CustomClass or (CreateFn == nil and Instance.new(ClassName) or CreateFn())
-
+	
 	if DefaultPropertyOverwrite[ClassName] then
 		for PropertyName,Value in pairs(DefaultPropertyOverwrite[ClassName]) do
 			if Properties == nil or Properties[PropertyName] == nil then
@@ -5144,7 +5147,7 @@ function module.Create(ClassName,Properties,Children,Created)
 			end
 		end
 	end
-
+	
 	if Properties ~= nil and (not CustomClass) then
 		for i,v in pairs(Properties) do
 			if i == "WhenCreated" or i == "NotTagging" then
