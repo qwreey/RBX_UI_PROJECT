@@ -478,6 +478,8 @@ function module:UseDockWidget(Widget,NewMouse)
 		Y = 0;
 		ViewSizeX = MouseHandle.AbsoluteSize.X;
 		ViewSizeY = MouseHandle.AbsoluteSize.Y;
+		IsPseudoMouse = true;
+		Obj = MouseHandle;
 	}
 	
 	MouseHandle.MouseMoved:Connect(function(X,Y)
