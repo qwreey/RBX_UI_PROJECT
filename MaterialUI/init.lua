@@ -443,6 +443,7 @@ function module:UseDockWidget(Widget,NewMouse)
 	MouseHandle.Size = UDim2.new(1,0,1,0)
 	MouseHandle.ZIndex = -2147483648
 	MouseHandle.Text = ""
+	MouseHandle.Name = "DockWidgetMouseTracker"
 	
 	local Button1Down = Instance.new("BindableEvent")
 	local Button1Up = Instance.new("BindableEvent")
