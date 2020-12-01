@@ -32,6 +32,9 @@
 				},
 				"SectionsTextLable": {
 					"$path": "SectionsTextLable"
+				},
+				"DumpTable": {
+					"$path": "DumpTable"
 				}
 			}
 		}
