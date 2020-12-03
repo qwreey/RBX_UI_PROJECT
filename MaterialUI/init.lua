@@ -542,7 +542,7 @@ function module:UseDockWidget(Widget,NewMouse)
 	
 	for Index,Item in pairs(module.DockWidgetMouse) do
 		if Item.DockWidget == Widget then
-			table.remove(Index)
+			table.remove(module.DockWidgetMouse,Index)
 		end
 	end
 	module.DockWidgetMouse[#module.DockWidgetMouse+1] = {Mouse = MouseMt, DockWidget = Widget}
