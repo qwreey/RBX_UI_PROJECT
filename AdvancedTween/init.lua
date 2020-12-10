@@ -189,7 +189,6 @@ function module:RunTween(Item,Data,Properties,Ended)
 			for FncIndex,Fnc in pairs(Data.CallBack) do
 				if type(Fnc) ~= "function" then
 					Data.CallBack[FncIndex] = nil
-					continue
 				end
 				
 				if tonumber(FncIndex) <= Index then
