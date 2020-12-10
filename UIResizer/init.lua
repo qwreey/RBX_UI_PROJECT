@@ -19,7 +19,7 @@ function ReleaserB()
 	return n
 end
 
-function module:SetReSizer(Main,Settings)
+function module:SetResizer(Main,Settings)
 	
 	--Settings.CheckResizable
 	
@@ -186,5 +186,7 @@ function module:SetReSizer(Main,Settings)
 	
 	return ReturnData
 end
+
+module.SetReSizer = module.SetResizer
 
 return module
