@@ -4,6 +4,7 @@ end
 
 local module = {}
 local Run = game:GetService("RunService")
+local IsPlugin = Run:IsStudio() and (not Run:IsRunning()) and Run:IsEdit()
 
 function module:GetVec(Ang,Force)
 	-- Ang   = 앵글 값(각도 값) , 1분면의 X 축을 0도로 함(1 사분면에서 그려지는 직각 삼각형에 대해서)
@@ -52,7 +53,7 @@ function module:Craft_2DParticleEmitter(InfoData)
 	GA = GA * (Dim and -1 or 1)
 	
 	local StepConnect
-	StepConnect = Run.Stepped:Connect(function()
+	StepConnect = (IsPlugin and Run.Heartbeat or Run.Stepped):Connect(function()
 		POS = POS + VEC
 		
 		VEC = VEC - Vector2.new(0,GA) * Vector2.new(IA,1)
