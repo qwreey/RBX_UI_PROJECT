@@ -117,9 +117,9 @@ function module:RunTween(Item,Data,Properties,Ended)
 	-- 이징 효과 가져오기
 	local Direction = Data.Direction or "Out"
 	local Easing do
-		local Data_Easing = Data.Easing
+		local Data_Easing = Data.Easing or EasingFunctions.Exp2
 		local Data_EasingType = type(Data_Easing)
-		Easing = (Data_EasingType == "function" and Data_Easing) or (Data_EasingType == "table" and Data_Easing.Run) or EasingFunctions.Exp2
+		Easing = (Data_EasingType == "function" and Data_Easing) or (Data_EasingType == "table" and Data_Easing.Run)
 		if Data_EasingType == "table" and Data_Easing.Reverse then
 			Direction = Direction == "Out" and "In" or "Out"
 		end
