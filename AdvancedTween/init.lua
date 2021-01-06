@@ -120,7 +120,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 		local Data_Easing = Data.Easing
 		local Data_EasingType = type(Data_Easing)
 		Easing = (Data_EasingType == "function" and Data_Easing) or (Data_EasingType == "table" and Data_Easing.Run) or EasingFunctions.Exp2
-		if Data_EasingType == "table" and Easing.Reverse then
+		if Data_EasingType == "table" and Data_Easing.Reverse then
 			Direction = Direction == "Out" and "In" or "Out"
 		end
 	end
