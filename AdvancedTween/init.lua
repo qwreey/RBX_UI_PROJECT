@@ -125,6 +125,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 	end
 
+	-- 스탭핑
     local Step
 	Step = function()
 		-- 아에 멈추게 되는 경우
@@ -180,14 +181,14 @@ function module:RunTween(Item,Data,Properties,Ended)
 				Item,
 				LastProperties,
 				Properties,
-				Easing:Run(Index)
+				Easing(Index)
 			)
 		else
 			module:LerpProperties(
 				Item,
 				LastProperties,
 				Properties,
-				1 - Easing:Run(1 - Index)
+				1 - Easing(1 - Index)
 			)
 		end
 		
