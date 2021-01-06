@@ -126,7 +126,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 	end
 
 	-- 스탭핑
-    local Step
+	local Step
 	Step = function()
 		-- 아에 멈추게 되는 경우
 		if module.PlayIndex[Item] == nil then
@@ -249,9 +249,9 @@ function module:IsPropertyTweening(Item,PropertyName)
 end
 
 function module:Stepped()
-    for _,Function in pairs(BindedFunctions) do
-        Function()
-    end
+	for _,Function in pairs(BindedFunctions) do
+		Function()
+	end
 end
 Stepped:BindStep(module.Stepped)
 
