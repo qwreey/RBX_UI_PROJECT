@@ -134,6 +134,26 @@ function module:RunTween(Item,Data,Properties,Ended)
 			return
 		end
 		
+		local Now = tick()
+		local Index = 1 - (EndTime - Now) / Time
+
+		-- 속성 Lerp 수행
+		if Direction == "Out" then
+			module:LerpProperties(
+				Item,
+				LastProperties,
+				Properties,
+				Easing(Index)
+			)
+		else
+			module:LerpProperties(
+				Item,
+				LastProperties,
+				Properties,
+				1 - Easing(1 - Index)
+			)
+		end
+
 		-- 다른 트윈이 속성을 바꾸고 있다면(이후 트윈이) 그 속성을 건들지 않도록 없엠
 		local StopByOther = true
 		for Property,Index in pairs(NowAnimationIndex) do
@@ -145,14 +165,12 @@ function module:RunTween(Item,Data,Properties,Ended)
 				StopByOther = false
 			end
 		end
+
 		-- 만약 다른 트윈이 지금 트윈하고 있는 속성을 모두 먹은경우 현재 트윈을 삭제함
 		if StopByOther then
 			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
 			return
 		end
-		
-		local Now = tick()
-		local Index = 1 - (EndTime - Now) / Time
 
 		-- 끝남
 		if Now >= EndTime then
@@ -175,23 +193,6 @@ function module:RunTween(Item,Data,Properties,Ended)
 			end
 		end
 		
-		-- 속성 Lerp 수행
-		if Direction == "Out" then
-			module:LerpProperties(
-				Item,
-				LastProperties,
-				Properties,
-				Easing(Index)
-			)
-		else
-			module:LerpProperties(
-				Item,
-				LastProperties,
-				Properties,
-				1 - Easing(1 - Index)
-			)
-		end
-		
 		-- 중간 중간 함수 배정된것 실행
 		if Data.CallBack then
 			for FncIndex,Fnc in pairs(Data.CallBack) do
@@ -207,7 +208,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 	end
 	-- 스캐줄에 등록
-	BindedFunctions[#BindedFunctions + 1] = Step
+	table.insert(BindedFunctions,Step)
 end
 
 function module:RunTweens(Items,Data,Properties,Ended)
