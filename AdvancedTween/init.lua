@@ -86,39 +86,43 @@ function module:LerpProperties(Item,Old,New,Alpha)
 end
 
 -- 트윈 메서드 지정, 트윈을 만들게 됨
+-- Item : 트윈할 인스턴트
+-- Data : 트윈 정보들 (태이블)
+	--Data.Time (in seconds, you can use 0.5 .. etc)
+	--Data.Easing (function)
+	--Data.Direction ("Out" , "In")
+	--Data.CallBack 콜백 함수들(태이블), 예시 : 
+	--Data.CallBack[0.5] = function() end 다음과 같이 쓰면 인덱스가 정확히 0.5 가 되는 순간(시간이 아니라 이징 함수에 의해 나온 값이 같아지는 순간)
+	--해당 함수가 실행됨
+--Properties : 트윈할 속성과 목표값 예시 : 
+--Data.Properties.Position = UDim2.new(1,0,1,0) 처럼 하면 Position 속성의 목표를 1,0,1,0 으로 지정
 function module:RunTween(Item,Data,Properties,Ended)
-	-- Item : 트윈할 인스턴트
-	-- Data : 트윈 정보들 (태이블)
-		--Data.Time (in seconds, you can use 0.5 .. etc)
-		--Data.Easing (function)
-		--Data.Direction ("Out" , "In")
-		--Data.CallBack 콜백 함수들(태이블), 예시 : 
-		--Data.CallBack[0.5] = function() end 다음과 같이 쓰면 인덱스가 정확히 0.5 가 되는 순간(시간이 아니라 이징 함수에 의해 나온 값이 같아지는 순간)
-		--해당 함수가 실행됨
-	--Properties : 트윈할 속성과 목표값 예시 : 
-	--Data.Properties.Position = UDim2.new(1,0,1,0) 처럼 하면 Position 속성의 목표를 1,0,1,0 으로 지정
+	-- 시간 저장
+	local Time = Data.Time or 1
+	local EndTime = tick() + Time
 	
-	local Time      = Data.Time == nil and 1 or Data.Time
-	local Direction = Data.Direction or "Out"
+	-- 플레이 인덱스 저장
+	local ThisPlayIndex = module.PlayIndex[Item] or {}
+	module.PlayIndex[Item] = ThisPlayIndex
 	
-	module.PlayIndex[Item] = module.PlayIndex[Item] or {}
-	
-	--module.ItemCount[Item] = module.ItemCount[Item] + 1
-	--local AnimationCount = module.ItemCount[Item]
-	
+	-- 예전의 트윈을 덮어쓰고 현재 값을 저장함
 	local NowAnimationIndex = {}
 	local LastProperties = {}
 	for Property,_ in pairs(Properties) do
 		LastProperties[Property] = Item[Property]
-		module.PlayIndex[Item][Property] = module.PlayIndex[Item][Property] ~= nil and module.PlayIndex[Item][Property] + 1 or 1
-		NowAnimationIndex[Property] = module.PlayIndex[Item][Property]
+		ThisPlayIndex[Property] = ThisPlayIndex[Property] ~= nil and ThisPlayIndex[Property] + 1 or 1
+		NowAnimationIndex[Property] = ThisPlayIndex[Property]
 	end
 	
-	local Easing = (type(Data.Easing) == "function" and Data.Easing or EasingFunctions[Data.Easing]) or EasingFunctions.Exp2
-	local EndTime = tick() + Time
-	
-	if Easing.Reverse then
-		Direction = Direction == "Out" and "In" or "Out"
+	-- 이징 효과 가져오기
+	local Direction = Data.Direction or "Out"
+	local Easing do
+		local Data_Easing = Data.Easing
+		local Data_EasingType = type(Data_Easing)
+		Easing = (Data_EasingType == "function" and Data_Easing) or (Data_EasingType == "table" and Data_Easing.Run) or EasingFunctions.Exp2
+		if Data_EasingType == "table" and Easing.Reverse then
+			Direction = Direction == "Out" and "In" or "Out"
+		end
 	end
 
     local Step
@@ -132,7 +136,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 		-- 다른 트윈이 속성을 바꾸고 있다면(이후 트윈이) 그 속성을 건들지 않도록 없엠
 		local StopByOther = true
 		for Property,Index in pairs(NowAnimationIndex) do
-			if Index ~= module.PlayIndex[Item][Property] then
+			if Index ~= ThisPlayIndex[Property] then
 				LastProperties[Property] = nil
 				Properties[Property] = nil
 				NowAnimationIndex[Property] = nil
@@ -147,19 +151,20 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 		
 		local Now = tick()
-		
 		local Index = 1 - (EndTime - Now) / Time
+
+		-- 끝남
 		if Now >= EndTime then
 			for Property,_ in pairs(Properties) do
-				module.PlayIndex[Item][Property] = 0
+				ThisPlayIndex[Property] = 0
 			end
 
 			local PlayIndexLen = 0
-			for _,_ in pairs(module.PlayIndex[Item]) do
+			for _,_ in pairs(ThisPlayIndex) do
 				PlayIndexLen = PlayIndexLen + 1
 			end
 			if PlayIndexLen == 0 then
-				module.PlayIndex[Item] = nil
+				ThisPlayIndex = nil
 			end
 
 			table.remove(BindedFunctions,table.find(BindedFunctions,Step))
@@ -169,6 +174,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 			end
 		end
 		
+		-- 속성 Lerp 수행
 		if Direction == "Out" then
 			module:LerpProperties(
 				Item,
@@ -185,6 +191,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 			)
 		end
 		
+		-- 중간 중간 함수 배정된것 실행
 		if Data.CallBack then
 			for FncIndex,Fnc in pairs(Data.CallBack) do
 				if type(Fnc) ~= "function" then
@@ -198,9 +205,8 @@ function module:RunTween(Item,Data,Properties,Ended)
 			end
 		end
 	end
+	-- 스캐줄에 등록
 	BindedFunctions[#BindedFunctions + 1] = Step
-	--local Step
-	--Step = Run.Stepped:Connect()
 end
 
 function module:RunTweens(Items,Data,Properties,Ended)
