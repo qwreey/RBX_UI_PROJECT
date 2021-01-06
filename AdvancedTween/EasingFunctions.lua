@@ -5,14 +5,14 @@ local function reverse(Index)
 end
 
 local Linear = {} do
-	Linear.Run = function(self,Index)
+	Linear.Run = function(Index)
 		return Index
 	end
 end
 EasingFunctions["Linear"] = Linear
 
 local Circle = {} do
-	Circle.Run = function(self,Index)
+	Circle.Run = function(Index)
 		return 1-(Index^2)
 	end
 end
@@ -29,7 +29,7 @@ local Exp2 = {} do
 	local Max = math.exp(MaxIndex) - Min
 
 	Exp2.Reverse = true
-	Exp2.Run = function(self,Index)
+	Exp2.Run = function(Index)
 		-- Index ; max = 1 min = 0
 		return (math.exp(GetIndex(Index)) - Min) / Max
 	end
@@ -47,7 +47,7 @@ local Exp4 = {} do
 	local Max = math.exp(MaxIndex) - Min
 
 	Exp4.Reverse = true
-	Exp4.Run = function(self,Index)
+	Exp4.Run = function(Index)
 		-- Index ; max = 1 min = 0
 		return (math.exp(GetIndex(Index)) - Min) / Max
 	end
@@ -65,7 +65,7 @@ local Exp2Max4 = {} do
 	local Max = math.exp(MaxIndex) - Min
 
 	Exp2Max4.Reverse = true
-	Exp2Max4.Run = function(self,Index)
+	Exp2Max4.Run = function(Index)
 		-- Index ; max = 1 min = 0
 		return (math.exp(GetIndex(Index)) - Min) / Max
 	end
