@@ -35,6 +35,9 @@
 				},
 				"DumpTable": {
 					"$path": "DumpTable"
+				},
+				"CustomScroll": {
+					"$path": "CustomScroll"
 				}
 			}
 		}
