@@ -199,7 +199,7 @@ function module.new(Data)
 		-- gameProcessedEvent 안 받아도 됨, 그러면 버튼 위에서 떨어져 나간
 		-- 인풋을 먹어버려서 안됨
 		
-		if InputTypes[Input.UserInputType] or Obj.Parent == nil then
+		if InputTypes[Input.UserInputType] or Frame.Parent == nil then
 			DisconnectMoveConnect()
 		end
 	end
