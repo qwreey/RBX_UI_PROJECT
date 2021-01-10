@@ -180,8 +180,8 @@ function module.new(Data)
 			return
 		end
 		
-		x = x or Mouse.X
-		y = y or Mouse.Y
+		x = x or (Mouse.X + 36)
+		y = y or (Mouse.Y + 36)
 		
 		IsMoving = true
 		Scroll((x-LastMovePosX)*1.2,(y-LastMovePosY)*1.2,true)
