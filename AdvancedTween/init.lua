@@ -41,10 +41,9 @@ module.EasingDirection = {
 -- Lerp 함수
 ------------------------------------
 -- 이중 선형, Alpha 를 받아서 값을 구해옴
-function module:Lerp(start,goal,alpha)
+function Lerp(start,goal,alpha)
 	return start + ((goal - start) * alpha)
 end
-local Lerp = module.Lerp
 
 -- 기본적으로 로블록스에 있는 클래스중, + - * / 과 같은 연산자 처리 메타 인덱스가 있는것들
 local DefaultItems = {
@@ -56,7 +55,7 @@ local DefaultItems = {
 
 -- 예전 값,목표 값,알파를 주고 각각 해당하는 속성에 입력해줌
 -- 기본적으로 모든 속성값 적용은 여기에서 이루워짐
-function module:LerpProperties(Item,Old,New,Alpha)
+function LerpProperties(Item,Old,New,Alpha)
 	for Property,OldValue in pairs(Old) do
 		local NewValue = New[Property]
 		if NewValue ~= nil then
@@ -85,7 +84,6 @@ function module:LerpProperties(Item,Old,New,Alpha)
 		end
 	end
 end
-local LerpProperties = module.LerpProperties
 
 ------------------------------------
 -- 모듈 함수 지정

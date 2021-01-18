@@ -1,9 +1,8 @@
 local module = {}
 
-function module:Lerp(Alpha,Point1,Point2)
+function Lerp(Alpha,Point1,Point2)
 	return Point1 + ( (Point2 - Point1) * Alpha )
 end
-local Lerp = module.Lerp
 
 function module:Bezier(Alpha,...)
 	local New = {}
