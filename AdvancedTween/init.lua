@@ -1,30 +1,25 @@
---local Run = game:GetService("RunService")
-
 local module = {}
+
+------------------------------------
+-- 기본함수, 필요 모듈 가져오기
+------------------------------------
+local type = typeof or type
+local clock = os.clock
+local tonumber = tonumber
+
+local script = script
 local EasingFunctions = require(script and script.EasingFunctions or "EasingFunctions")
 local Stepped = require(script and script.Stepped or "Stepped")
-local BindedFunctions = {}
 
-function reverse(Index)
-	-- 1 - 변환
-	-- out , in 구현을 위해 사용됨
-	return 1 - Index
-end
+local BindedFunctions = {} -- 애니메이션을 위해 프레임에 연결된 함수들
 
-function module:Lerp(start,goal,alpha)
-	-- 이중 선형 보간법, Alpha 를 받아서 값을 구해옴 (목표값과 시작값 에 알파만큼의 사이의 값을 구해옴)
-	return start + ((goal - start) * alpha)
-end
+module.PlayIndex = setmetatable({},{__mode = "k"}) -- 애니메이션 실행 스택 저장하기
+-- PlayIndex[Item][Property] = 0 or nil <= 트윈중이지 않은 속성
+-- PlayIndex[Item][Property] = 1... <= 트윈중인 속성
 
--- 애니메이션 실행 스택 저장하기, 기본적으로 1 부터 시작하고 0 인 경우는 아에 멈춰있는 상태
--- 스택은 각각 속성마다 저장되며, PlayIndex 에 해당하는 개채를 KEY 로 지정하여 그 KEY 에 속성당 인덱스가 담긴
--- 태이블을 담음
--- 즉, PlayIndex[Item][PropertyName] 과 같은 형태로 스택을 보관함,
--- 기본적으로 KEY 인 개채가 사라지면, 더이상 접근할수 없게 되기 때문에 알아서
--- gc 가 수거해감
-module.PlayIndex = setmetatable({},{__mode = "k"})
-
--- 값의 변화량을 가져오기 위한 함수들 지정, 그리고 그 방향을 지정하기 위한 Enum 정의
+------------------------------------
+-- Easing 스타일
+------------------------------------
 module.EasingFunctions = {
 	--// for Autocomplete
 	Linear = EasingFunctions.Linear; --// 직선
@@ -38,12 +33,20 @@ for i,v in pairs(EasingFunctions) do
 end
 
 module.EasingDirection = {
-	Out = "Out";
-	In  = "In" ;
+	Out = "Out"; -- 반전된 방향
+	In  = "In" ; -- 기본방향
 }
 
+------------------------------------
+-- Lerp 함수
+------------------------------------
+-- 이중 선형, Alpha 를 받아서 값을 구해옴
+function module:Lerp(start,goal,alpha)
+	return start + ((goal - start) * alpha)
+end
+local Lerp = module.Lerp
+
 -- 기본적으로 로블록스에 있는 클래스중, + - * / 과 같은 연산자 처리 메타 인덱스가 있는것들
--- typeof 에서 다음 값과 같은경우 따로 확인 없이 바로 이중선형보간 함수로 넘어감
 local DefaultItems = {
 	["Vector2"] = true;
 	["Vector3"] = true;
@@ -56,35 +59,37 @@ local DefaultItems = {
 function module:LerpProperties(Item,Old,New,Alpha)
 	for Property,OldValue in pairs(Old) do
 		local NewValue = New[Property]
-		if NewValue == nil then
-			continue
-		end
-		
-		local Type = typeof(OldValue)
-		if DefaultItems[Type] then
-			Item[Property] = module:Lerp(OldValue,NewValue,Alpha)
-		elseif Type == "UDim2" then
-			Item[Property] = UDim2.new(
-				module:Lerp(OldValue.X.Scale ,NewValue.X.Scale ,Alpha),
-				module:Lerp(OldValue.X.Offset,NewValue.X.Offset,Alpha),
-				module:Lerp(OldValue.Y.Scale ,NewValue.Y.Scale ,Alpha),
-				module:Lerp(OldValue.Y.Offset,NewValue.Y.Offset,Alpha)
-			)
-		elseif Type == "UDim" then
-			Item[Property] = UDim.new(
-				module:Lerp(OldValue.Scale ,NewValue.Scale ),
-				module:Lerp(OldValue.Offset,NewValue.Offset)
-			)
-		elseif Type == "Color3" then
-			Item[Property] = Color3.fromRGB(
-				module:Lerp(OldValue.r*255,NewValue.r*255),
-				module:Lerp(OldValue.g*255,NewValue.g*255),
-				module:Lerp(OldValue.b*255,NewValue.b*255)
-			)
+		if NewValue ~= nil then
+			local Type = type(OldValue)
+			if DefaultItems[Type] then
+				Item[Property] = Lerp(OldValue,NewValue,Alpha)
+			elseif Type == "UDim2" then
+				Item[Property] = UDim2.new(
+					Lerp(OldValue.X.Scale ,NewValue.X.Scale ,Alpha),
+					Lerp(OldValue.X.Offset,NewValue.X.Offset,Alpha),
+					Lerp(OldValue.Y.Scale ,NewValue.Y.Scale ,Alpha),
+					Lerp(OldValue.Y.Offset,NewValue.Y.Offset,Alpha)
+				)
+			elseif Type == "UDim" then
+				Item[Property] = UDim.new(
+					Lerp(OldValue.Scale ,NewValue.Scale ),
+					Lerp(OldValue.Offset,NewValue.Offset)
+				)
+			elseif Type == "Color3" then
+				Item[Property] = Color3.fromRGB(
+					Lerp(OldValue.r*255,NewValue.r*255),
+					Lerp(OldValue.g*255,NewValue.g*255),
+					Lerp(OldValue.b*255,NewValue.b*255)
+				)
+			end
 		end
 	end
 end
+local LerpProperties = module.LerpProperties
 
+------------------------------------
+-- 모듈 함수 지정
+------------------------------------
 -- 트윈 메서드 지정, 트윈을 만들게 됨
 -- Item : 트윈할 인스턴트
 -- Data : 트윈 정보들 (태이블)
@@ -99,7 +104,7 @@ end
 function module:RunTween(Item,Data,Properties,Ended)
 	-- 시간 저장
 	local Time = Data.Time or 1
-	local EndTime = tick() + Time
+	local EndTime = clock() + Time
 	
 	-- 플레이 인덱스 저장
 	local ThisPlayIndex = module.PlayIndex[Item] or {}
@@ -125,6 +130,15 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 	end
 
+	-- 중간중간 실행되는 함수 확인
+	local CallBack = Data.CallBack
+	if CallBack then
+		for FncIndex,Fnc in pairs(CallBack) do
+			if type(Fnc) ~= "function" or type(tonumber(FncIndex)) ~= "number" then
+				CallBack[FncIndex] = nil
+			end
+		end
+	end
 	-- 스탭핑
 	local Step
 	Step = function()
@@ -134,19 +148,19 @@ function module:RunTween(Item,Data,Properties,Ended)
 			return
 		end
 		
-		local Now = tick()
+		local Now = clock()
 		local Index = 1 - (EndTime - Now) / Time
 
 		-- 속성 Lerp 수행
 		if Direction == "Out" then
-			module:LerpProperties(
+			LerpProperties(
 				Item,
 				LastProperties,
 				Properties,
 				Easing(Index)
 			)
 		else
-			module:LerpProperties(
+			LerpProperties(
 				Item,
 				LastProperties,
 				Properties,
@@ -194,23 +208,21 @@ function module:RunTween(Item,Data,Properties,Ended)
 		end
 		
 		-- 중간 중간 함수 배정된것 실행
-		if Data.CallBack then
-			for FncIndex,Fnc in pairs(Data.CallBack) do
-				if type(Fnc) ~= "function" then
-					Data.CallBack[FncIndex] = nil
-				end
-				
+		if CallBack then
+			for FncIndex,Fnc in pairs(CallBack) do
 				if tonumber(FncIndex) <= Index then
 					Fnc()
-					Data.CallBack[FncIndex] = nil
+					CallBack[FncIndex] = nil
 				end
 			end
 		end
 	end
+
 	-- 스캐줄에 등록
 	table.insert(BindedFunctions,Step)
 end
 
+-- 여러개의 개체를 트윈시킴
 function module:RunTweens(Items,Data,Properties,Ended)
 	local First = true
 	for _,Item in pairs(Items) do
@@ -219,10 +231,12 @@ function module:RunTweens(Items,Data,Properties,Ended)
 	end
 end
 
+-- 트윈 멈추기
 function module:StopTween(Item)
 	module.PlayIndex[Item] = nil
 end
 
+-- 해당 개체가 트윈중인지 반환
 function module:IsTweening(Item)
 	if module.PlayIndex[Item] == nil then
 		return false
@@ -234,9 +248,9 @@ function module:IsTweening(Item)
 		end
 	end
 	return false
-	--return module.ItemCount[Item] ~= 0
 end
 
+-- 해당 개체의 해당 프로퍼티가 트윈중인지 반환
 function module:IsPropertyTweening(Item,PropertyName)
 	if module.PlayIndex[Item] == nil then
 		return false
@@ -249,6 +263,12 @@ function module:IsPropertyTweening(Item,PropertyName)
 	return module.PlayIndex[Item][PropertyName] ~= 0
 end
 
+------------------------------------
+-- 프레임 연결
+------------------------------------
+-- 1 프레임마다 실행되도록 해야되는 함수
+-- ./Stepped.lua 에서 연결점 편집 가능
+-- roblox 는 이미 연결되어 있음
 function module:Stepped()
 	for _,Function in pairs(BindedFunctions) do
 		Function()
