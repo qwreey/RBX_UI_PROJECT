@@ -38,6 +38,9 @@
 				},
 				"CustomScroll": {
 					"$path": "CustomScroll"
+				},
+				"RBXMarkdown": {
+					"$path": "RBXMarkdown"
 				}
 			}
 		}
