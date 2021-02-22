@@ -1,3 +1,4 @@
+---@see 오류 트래킹을 위한 try 함수
 return function (func,...)
     local pass,returns = pcall(func,...);
 

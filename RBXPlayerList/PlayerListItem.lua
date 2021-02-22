@@ -1,35 +1,19 @@
--- TODO : 코드 정리 해야됨
-
 local render = {}
 
 --#region Load libs
+local rojo = game:GetService("ReplicatedStorage"):WaitForChild("rojo")
 local MaterialUI if false then MaterialUI = require("MaterialUI.init"); end
-MaterialUI = require(game:GetService("ReplicatedStorage"):WaitForChild("rojo"):WaitForChild("MaterialUI"));
+MaterialUI = require(rojo:WaitForChild("MaterialUI"));
 local EDrow = MaterialUI.Create;
-local AdvancedTween if false then AdvancedTween = require("AdvancedTween.init"); end
-AdvancedTween = require(game:GetService("ReplicatedStorage"):WaitForChild("rojo"):WaitForChild("MaterialUI"));
 local try if false then AdvancedTween = require("try"); end
 try = require(script.Parent.try);
 local PlayerUtil if false then AdvancedTween = require("PlayerUtil"); end
 PlayerUtil = require(script.Parent.PlayerUtil);
 --#endregion
-
 --#region Get RBX Items
 local UDim2 = UDim2;
 local Enum = Enum;
 local Vector2 = Vector2;
-local type = type;
-local typeof = typeof;
-local print = print or function (...)
-    local arg = {...};
-
-    for Index,Str in pairs(arg) do
-        arg[Index] = Str .. "\t";
-    end
-
-    io.write(table.unpack(arg));
-    return nil;
-end;
 --#endregion
 
 --#region Settings / Global
@@ -55,13 +39,14 @@ local GlobalFont = Enum.Font.Gotham;
 -- 자세한건 MaterialUI 에 Create 를 참고 바람...
 --#endregion
 
-local Connection = {} -- 나중에 이걸로 바인딩 지움
+local Connection = {}; -- 나중에 이걸로 바인딩 지움
+local LastRender = {}; -- 나중에 이걸로 UI 지움
 
---@param PClass userdata Player Instance
---@param DisplayIndex integer Display Order
---@return userdata Instance RUI-Render Object
---@see Player => RUI
-
+---@param PClass userdata Player Instance
+---@param DisplayIndex integer Display Order
+---@param Leaderstats table Leaderstats data
+---@return userdata Instance RUI-Render Object
+---@see 플레이어 리스트 아이템 하나 그리기
 function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
     --local this = {}
     return EDrow("ImageLabel",{
@@ -87,7 +72,7 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
         });
         -- 썸네일 렌더링 (캐릭터 프필 가져옴)
         PlayerImage = EDrow("ImageLabel",{
-            Image = try(PlayerUtil.GetPlayerIcon,PlayerClass.UserID):err(function (errinfo)
+            Image = try(PlayerUtil.GetPlayerIcon,PlayerClass.UserId):err(function (errinfo)
                 warn("an error occurred on loading player image");
                 warn(errinfo);
                 return ""; -- error 잡히면 일단 이미지 비움
@@ -120,16 +105,18 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
         },{
             ListLayOut = EDrow("UIListLayout",{
                 SortOrder = Enum.SortOrder.LayoutOrder;
+                FillDirection = Enum.FillDirection.Horizontal;
+                HorizontalAlignment = Enum.HorizontalAlignment.Right;
             });
         });
     });
 end
 
---@see 맨 위에 Name | Leaderstats 같이 라벨 쓰는 함수
+---@see 맨 위에 Name | Leaderstats 같이 라벨 쓰는 함수
 function render.Header(Leaderstats)
     return EDrow("Frame",{
         BackgroundTransparency = 1;
-        Size = UDim2.new(1,0,0,28);
+        Size = UDim2.new(1,0,0,20);
         --Size = UDim2.new(0,170,0,28); --<< Layout;
         --Position = << Layout;
         LayoutOrder = -255;
@@ -170,11 +157,12 @@ function render.Header(Leaderstats)
         },{
             ListLayOut = EDrow("UIListLayout",{
                 SortOrder = Enum.SortOrder.LayoutOrder;
+                FillDirection = Enum.FillDirection.Horizontal;
+                HorizontalAlignment = Enum.HorizontalAlignment.Right;
             });
         });
     });
 end
-
 
 --@param PData table Player Data array
 --@return table Array RUI-Render Object Array
@@ -188,20 +176,29 @@ function render:render(Data)
         Connection[Index] = nil;
     end
 
+    -- 이전 UI 제거
+    for Index,Item in pairs(LastRender) do
+        Item:Destroy();
+        LastRender[Index] = nil;
+    end
+
     local PlayerData = Data.Players; -- 플레이어가 담긴 테이블
     local Leaderstats = Data.Leaderstats; -- 플레이어에 대해서 리더스텟 그리기
     local Sort = Data.Sort; -- 플레이어를 정렬하는 함수
 
+    -- 정렬하는 함수 있으면 정렬
     if Sort then
         PlayerData = Sort(PlayerData);
     end
 
+    -- 그리기
     local list = {};
-    list[1] = self.Header(Leaderstats);
+    list[1] = self.Header(Leaderstats); -- 헤더 그리기
     for DisplayOrder,PlayerClass in pairs(PlayerData) do
         list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats);
     end
 
+    LastRender = list; -- 나중에 지울 수 있게 만들기
     return list;
 end
 

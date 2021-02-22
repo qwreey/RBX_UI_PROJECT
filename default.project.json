@@ -42,8 +42,8 @@
 				"RBXMarkdown": {
 					"$path": "RBXMarkdown"
 				},
-				"RBXPlayerListHandle": {
-					"$path": "RBXPlayerListHandle"
+				"RBXPlayerList": {
+					"$path": "RBXPlayerList"
 				}
 			}
 		}
