@@ -1,8 +1,11 @@
+-- TODO : 코드 정리 해야됨
+
 local render = {}
 
 --#region Load libs
 local MaterialUI if false then MaterialUI = require("MaterialUI.init"); end
 MaterialUI = require(game:GetService("ReplicatedStorage"):WaitForChild("rojo"):WaitForChild("MaterialUI"));
+local EDrow = MaterialUI.Create;
 local AdvancedTween if false then AdvancedTween = require("AdvancedTween.init"); end
 AdvancedTween = require(game:GetService("ReplicatedStorage"):WaitForChild("rojo"):WaitForChild("MaterialUI"));
 local try if false then AdvancedTween = require("try"); end
@@ -29,43 +32,63 @@ local print = print or function (...)
 end;
 --#endregion
 
-local EDrow = MaterialUI.Create
+--#region Settings / Global
+local GlobalFont = Enum.Font.Gotham;
+--#endregion
 
-local function getPImage()
-    return ""
-end
+--#region EDrow 대충 설명
+-- EDrow 함수는 인자로 3개 받음(보통의 경우)
+-- 1번째는 클래스명, 2번째는 프로퍼티들, 3번째는 자식 개체 담은 테이블
+-- 1번째는 함수나 테이블로도 쓰일 수 있고 Button 이나 CheckBox 같이 커스텀 클래스도 존재함
+-- 2번째 프로퍼티 테이블에 WhenCreated 에 함수 넣으면 해당 개체가 만들어질때 self 넘겨줌
+-- 3번째는 {Name = Child;} 로 이루워짐
+-- 이걸 스텍 쌓을수도 있음
+-- EDrow("Frame",{
+--     BackgroundTransparency = 1;   
+-- },{
+--     EDrow("Frame",{
+--         BackgroundTransparency = 1;   
+--     },{
+--         ...
+--     });
+-- });
+-- 자세한건 MaterialUI 에 Create 를 참고 바람...
+--#endregion
+
+local Connection = {} -- 나중에 이걸로 바인딩 지움
 
 --@param PClass userdata Player Instance
 --@param DisplayIndex integer Display Order
 --@return userdata Instance RUI-Render Object
 --@see Player => RUI
-function render.PlayerItem(PClass,DisplayIndex)
+
+function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
+    --local this = {}
     return EDrow("ImageLabel",{
         BackgroundTransparency = 1;
-        Size = UDim2.new(0,170,0,28); --<< Layout;
-        --Position = << Layout;
+        Size = UDim2.new(1,0,0,28);
         LayoutOrder = DisplayIndex or 1;
         ImageColor3 = Color3.fromRGB(0,0,0);
         ImageTransparency = 0.5;
-        WhenCreated = function (self)
-            MaterialUI:SetRound(self,50)
+        WhenCreated = function (this)
+            MaterialUI:SetRound(this,50);
         end;
     },{
         -- 텍스트 렌더링
         PlayerNameLabel = EDrow("TextLabel",{
-            Text = PClass.Name;
+            Text = PlayerClass.Name;
             TextSize = 14;
-            Font = Enum.Font.Gotham;
+            Font = GlobalFont;
             TextColor3 = Color3.fromRGB(255,255,255);
             BackgroundTransparency = 1;
             Size = UDim2.fromScale(1,1);
             Position = UDim2.fromOffset(32,0);
             TextXAlignment = Enum.TextXAlignment.Left;
         });
-        -- 썸네일 렌더링
+        -- 썸네일 렌더링 (캐릭터 프필 가져옴)
         PlayerImage = EDrow("ImageLabel",{
-            Image = try(PlayerUtil.GetPlayerIcon,PClass.UserID):err(function (errinfo)
-                warn("an error occurred on loading ");
+            Image = try(PlayerUtil.GetPlayerIcon,PlayerClass.UserID):err(function (errinfo)
+                warn("an error occurred on loading player image");
                 warn(errinfo);
                 return ""; -- error 잡히면 일단 이미지 비움
             end):getreturn();
@@ -75,21 +98,108 @@ function render.PlayerItem(PClass,DisplayIndex)
             BackgroundTransparency = 1;
             -- 귀찮으니깐 크기는 그냥...
         },{
+            -- 둥글게 적용
             EDrow("UICorner",{
-                CornerRadius = UDim.new(1,0)
+                CornerRadius = UDim.new(1,0);
+            });
+        });
+        -- 리더보드 렌더링
+        Leaderstats = EDrow("Frame",{
+            Size = UDim2.fromScale(1,1);
+            BackgroundTransparency = 1;
+            WhenCreated = function (this)
+                if not Leaderstats then
+                    return nil;
+                end
+                
+                -- 리더스텟을 그림
+                for i,v in pairs(Leaderstats) do
+                    
+                end
+            end;
+        },{
+            ListLayOut = EDrow("UIListLayout",{
+                SortOrder = Enum.SortOrder.LayoutOrder;
             });
         });
     });
 end
 
+--@see 맨 위에 Name | Leaderstats 같이 라벨 쓰는 함수
+function render.Header(Leaderstats)
+    return EDrow("Frame",{
+        BackgroundTransparency = 1;
+        Size = UDim2.new(1,0,0,28);
+        --Size = UDim2.new(0,170,0,28); --<< Layout;
+        --Position = << Layout;
+        LayoutOrder = -255;
+    },{
+        -- 분리선
+        Div = EDrow("Frame",{
+            Size = UDim2.new(1,-18,0,1);
+            Position = UDim2.new(0.5,0,1,-1);
+            AnchorPoint = Vector2.new(0.5,0);
+            BackgroundColor3 = Color3.fromRGB(150,150,150);
+            BackgroundTransparency = 0.1;
+        });
+        -- 텍스트 렌더링
+        PlayerNameLabel = EDrow("TextLabel",{
+            Text = "Name";
+            TextSize = 14;
+            Font = GlobalFont;
+            TextColor3 = Color3.fromRGB(0,0,0);
+            BackgroundTransparency = 1;
+            Size = UDim2.fromScale(1,1);
+            Position = UDim2.fromOffset(8,0);
+            TextXAlignment = Enum.TextXAlignment.Left;
+        });
+        -- 리더보드 렌더링
+        Leaderstats = EDrow("Frame",{
+            Size = UDim2.fromScale(1,1);
+            BackgroundTransparency = 1;
+            WhenCreated = function (this)
+                if not Leaderstats then
+                    return nil;
+                end
+                
+                -- 리더스텟을 그림
+                for i,v in pairs(Leaderstats) do
+                    
+                end
+            end;
+        },{
+            ListLayOut = EDrow("UIListLayout",{
+                SortOrder = Enum.SortOrder.LayoutOrder;
+            });
+        });
+    });
+end
+
+
 --@param PData table Player Data array
 --@return table Array RUI-Render Object Array
 --@see render player list
-function render:render(PData)
-    local list = {};
+function render:render(Data)
+    -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)
+    for Index,Unbind in pairs(Connection) do
+        if Unbind then
+            Unbind()
+        end
+        Connection[Index] = nil;
+    end
 
-    for I,PClass in pairs(PData) do
-        list[I] = self.PlayerItem(PClass);
+    local PlayerData = Data.Players; -- 플레이어가 담긴 테이블
+    local Leaderstats = Data.Leaderstats; -- 플레이어에 대해서 리더스텟 그리기
+    local Sort = Data.Sort; -- 플레이어를 정렬하는 함수
+
+    if Sort then
+        PlayerData = Sort(PlayerData);
+    end
+
+    local list = {};
+    list[1] = self.Header(Leaderstats);
+    for DisplayOrder,PlayerClass in pairs(PlayerData) do
+        list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats);
     end
 
     return list;
