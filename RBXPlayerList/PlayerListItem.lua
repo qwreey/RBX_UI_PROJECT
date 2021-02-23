@@ -214,19 +214,9 @@ end
 --@return table Array RUI-Render Object Array
 --@see render player list
 function render:render(Data)
-    -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)
-    for Index,Unbind in pairs(Connection) do
-        if Unbind then
-            Unbind()
-        end
-        Connection[Index] = nil;
-    end
-
-    -- 이전 UI 제거
-    for Index,Item in pairs(LastRender) do
-        Item:Destroy();
-        LastRender[Index] = nil;
-    end
+    -- 렌더 초기화
+    local OldConnection = Connection;
+    Connection = {};
 
     local PlayerData = Data.Players; -- 플레이어가 담긴 테이블
     local Leaderstats = Data.Leaderstats; -- 플레이어에 대해서 리더스텟 그리기
@@ -242,6 +232,19 @@ function render:render(Data)
     list[1] = self.Header(Leaderstats); -- 헤더 그리기
     for DisplayOrder,PlayerClass in pairs(PlayerData) do
         list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats);
+    end
+
+    -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)
+    for Index,Unbind in pairs(OldConnection) do
+        if Unbind then
+            Unbind()
+        end
+        Connection[Index] = nil;
+    end
+    -- 이전 UI 제거
+    for Index,Item in pairs(LastRender) do
+        Item:Destroy();
+        LastRender[Index] = nil;
     end
 
     LastRender = list; -- 나중에 지울 수 있게 만들기

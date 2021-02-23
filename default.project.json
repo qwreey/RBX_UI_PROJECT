@@ -43,7 +43,8 @@
 					"$path": "RBXMarkdown"
 				},
 				"RBXPlayerList": {
-					"$path": "RBXPlayerList"
+					"$path": "RBXPlayerList",
+					"$ignoreUnknownInstances": true
 				}
 			}
 		}
