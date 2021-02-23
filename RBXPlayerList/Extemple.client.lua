@@ -6,24 +6,23 @@ local PlayerListSetup = require(game:GetService("ReplicatedStorage"):WaitForChil
 PlayerListSetup.init({
     Leaderstats = {
         [1] = {
-            Name = "Leaderstats Test";
-            Size = 32;
+            Name = "Test";
+            Size = 50;
             GetValue = function (Player)
-                return tostring(0);
-                --return Player:WaitForChild("leaderstats"):WaitForChild("Test").Value
+                return tostring(Player:WaitForChild("leaderstats"):WaitForChild("Test").Value);
             end;
             BindToChanged = function (Player,func)
-                --local Connect = Player:WaitForChild("leaderstats"):WaitForChild("Test"):GetPropertyChangedSignal("Value"):Connect(func);
+                local Connect = Player:WaitForChild("leaderstats"):WaitForChild("Test"):GetPropertyChangedSignal("Value"):Connect(func);
                 
                 -- return unbind function
                 return function ()
-                    --if Connect then
-                    --    Connect:Disconnect()
-                    --end
+                    if Connect then
+                        Connect:Disconnect();
+                    end
                     return true;
                 end;
             end;
-        }
+        };
     };
     Sort = nil;
     HolderData = {

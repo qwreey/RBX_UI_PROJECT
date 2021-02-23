@@ -48,7 +48,7 @@ local LastRender = {}; -- 나중에 이걸로 UI 지움
 ---@return userdata Instance RUI-Render Object
 ---@see 플레이어 리스트 아이템 하나 그리기
 function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
-    --local this = {}
+    local Store = {}
     return EDrow("ImageLabel",{
         BackgroundTransparency = 1;
         Size = UDim2.new(1,0,0,28);
@@ -66,9 +66,13 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
             Font = GlobalFont;
             TextColor3 = Color3.fromRGB(255,255,255);
             BackgroundTransparency = 1;
-            Size = UDim2.fromScale(1,1);
+            Size = UDim2.new(1,-32,1,0);
             Position = UDim2.fromOffset(32,0);
             TextXAlignment = Enum.TextXAlignment.Left;
+            TextTruncate = Enum.TextTruncate.AtEnd;
+            WhenCreated = function (this)
+                Store.NameText = this;
+            end
         });
         -- 썸네일 렌더링 (캐릭터 프필 가져옴)
         PlayerImage = EDrow("ImageLabel",{
@@ -98,9 +102,42 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
                 end
                 
                 -- 리더스텟을 그림
-                for i,v in pairs(Leaderstats) do
+                local TotalLeaderstatsSize = 0;
+                for Index,Stats in pairs(Leaderstats) do
+                    TotalLeaderstatsSize = TotalLeaderstatsSize + (Stats.Size or 50);
+                    local Label = EDrow("TextLabel",{
+                        Size = UDim2.new(0,Stats.Size or 50,1,0);
+                        LayoutOrder = Index;
+                        Parent = this;
+                        Font = GlobalFont;
+                        TextSize = 11;
+                        Text = "";
+                        ClipsDescendants = true;
+                        BackgroundTransparency = 1;
+                        TextColor3 = Color3.fromRGB(255,255,255);
+                    },{
+                        -- 경계선
+                        Div = EDrow("Frame",{
+                            BackgroundColor3 = Color3.fromRGB(190,190,190);
+                            BackgroundTransparency = 0.4;
+                            Size = UDim2.new(0,1,0.7,0);
+                            AnchorPoint = Vector2.new(0,0.5);
+                            Position = UDim2.fromScale(0,0.5);
+                        });
+                    });
+
+                    local function Refresh()
+                        Label.Text = Stats.GetValue(PlayerClass);
+                    end
                     
+                    Connection[#Connection+1] = Stats.BindToChanged(PlayerClass,Refresh);
+                    Refresh();
                 end
+                
+                -- 이름 크기지정
+                Store.NameText.Size = UDim2.new(1,-Store.NameText.Position.X.Offset - TotalLeaderstatsSize,1,0);
+
+                return true;
             end;
         },{
             ListLayOut = EDrow("UIListLayout",{
@@ -132,7 +169,7 @@ function render.Header(Leaderstats)
         -- 텍스트 렌더링
         PlayerNameLabel = EDrow("TextLabel",{
             Text = "Name";
-            TextSize = 14;
+            TextSize = 13;
             Font = GlobalFont;
             TextColor3 = Color3.fromRGB(0,0,0);
             BackgroundTransparency = 1;
@@ -150,8 +187,17 @@ function render.Header(Leaderstats)
                 end
                 
                 -- 리더스텟을 그림
-                for i,v in pairs(Leaderstats) do
-                    
+                for Index,Stats in pairs(Leaderstats) do
+                    local Label = EDrow("TextLabel",{
+                        Size = UDim2.new(0,Stats.Size or 50,1,0);
+                        LayoutOrder = Index;
+                        Text = Stats.Name;
+                        Font = GlobalFont;
+                        TextSize = 13;
+                        TextColor3 = Color3.fromRGB(0,0,0);
+                        BackgroundTransparency = 1;
+                        Parent = this;
+                    });
                 end
             end;
         },{

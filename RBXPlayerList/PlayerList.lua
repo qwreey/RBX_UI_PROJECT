@@ -33,7 +33,7 @@ function render.MakeToggleButton(Data)
     Button.MouseButton1Click:Connect(function ()
         IsOpen = not IsOpen
         AdvancedTween:RunTween(RenderPlayerListHolder,{
-            Easing = AdvancedTween.EasingFunctions.Exp4;
+            Easing = AdvancedTween.EasingFunctions.Exp2;
             Direction = AdvancedTween.EasingDirection.Out;
             Time = 0.6;
         },{
@@ -76,6 +76,7 @@ function render:render(Data)
     for I,Render in pairs(Items) do
         Render.Parent = RenderPlayerListHolder;
     end
+    PlayerListHolder.RefreshLayout(); -- 리스트 길이 리프레시
     RenderPlayerListHolder.CanvasPosition = ScrollPosX; -- 스크롤 위치 불러오기
     
     return true; -- 오류 없이 넘김

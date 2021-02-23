@@ -36,9 +36,9 @@ function render:render(Data)
             SortOrder = Enum.SortOrder.LayoutOrder;
             Padding = UDim.new(0,2);
             WhenCreated = function (this)
-                this:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function ()
+                function render.RefreshLayout()
                     Scroll.CanvasSize = UDim2.new(0,0,0,this.AbsoluteContentSize.Y);
-                end);
+                end
             end;
         });
         Padding = EDrow("UIPadding",{
