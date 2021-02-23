@@ -213,6 +213,11 @@ function render.Header(Leaderstats)
     });
 end
 
+---@see 제정렬, 리더스탯을 순서로 하면 이게 필요해짐
+function render.Sort(Data)
+
+end;
+
 --@param PData table Player Data array
 --@return table Array RUI-Render Object Array
 --@see render player list

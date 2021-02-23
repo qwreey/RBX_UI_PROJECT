@@ -27,7 +27,28 @@ PlayerListSetup.init({
     -- end;
     --
     -- 예시 : 플레이어 이름을 모두 ? 로 바꾸고 가상 플레이어 생성
-    
+    -- GetPlayerFunc = function()
+    --     -- 기존 플레이어 가져와서 이름을 ???? 로 바꾸기
+    --     local list = {};
+    --     for Index,Player in pairs(game.Players:GetPlayers()) do
+    --         list[Index] = {
+    --             Name = "????";
+    --             UserId = Player;
+    --             leaderstats = Player:WaitForChild("leaderstats");
+    --         }
+    --     end
+    --     -- 커스텀 플레이어 추가
+    --     list[#list+1] = {
+    --         Name = "Custom Player",
+    --         UserId = 235968379,
+    --         leaderstats = EDrow("Folder",{ },{
+    --             Test = EDrow("IntValue",{
+    --                 Value = 5;
+    --             });
+    --         });
+    --     }  
+    --     return list; -- 리턴
+    -- end;
     GetPlayerFunc = nil;
 
     -- 플레이어를 어떻게 정렬할것인지 소팅 구조를 짜면 됩니다
