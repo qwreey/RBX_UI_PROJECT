@@ -17,7 +17,7 @@ local PlayerUtil = require(script.Parent.PlayerUtil);
 
 function module.init(Data)
     local function Render()
-        Data.Players = PlayerUtil:GetPlayers();
+        Data.Players = Data.GetPlayerFunc and Data.GetPlayerFunc() or PlayerUtil:GetPlayers();
         PlayerList:render(Data);
         return nil;
     end
@@ -26,7 +26,8 @@ function module.init(Data)
     PlayerUtil:BindToPlayerChanged(Render);
     Render();
 
-    -- 기본 플레이어 리스트 지우기
+    -- 기본 플레이어 리스트 지우기, 맨 뒤에 놔둔 이유는 렌더중 오류가 발생하면
+    -- 기본 플레이어 리스트가 살아 있도록 하기 위함
     game.StarterGui:SetCoreGuiEnabled(Enum.CoreGuiType.PlayerList,false);
 end;
 

@@ -27,6 +27,7 @@ local RenderPlayerListHolder;
 
 local RenderPlayerListTopbarBtn;
 local IsOpen = true;
+-- 열고 닫는 버튼 만들기
 function render.MakeToggleButton(Data)
     local Button = PlayerListTopbarBtn:render(app);
 

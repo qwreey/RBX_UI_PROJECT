@@ -45,9 +45,13 @@ local LastRender = {}; -- 나중에 이걸로 UI 지움
 ---@param PClass userdata Player Instance
 ---@param DisplayIndex integer Display Order
 ---@param Leaderstats table Leaderstats data
+---@param GetPlayerIcon function GetPlayerIcon function (nil = default)
 ---@return userdata Instance RUI-Render Object
 ---@see 플레이어 리스트 아이템 하나 그리기
-function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
+function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon)
+    local PlayerIcon = GetPlayerIcon and GetPlayerIcon(PlayerClass) or nil;
+    local PlayerIconIsClass = type(PlayerIcon) ~= "nil" and type(PlayerIcon) ~= "string"
+
     local Store = {}
     return EDrow("ImageLabel",{
         BackgroundTransparency = 1;
@@ -72,11 +76,11 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
             TextTruncate = Enum.TextTruncate.AtEnd;
             WhenCreated = function (this)
                 Store.NameText = this;
-            end
+            end;
         });
         -- 썸네일 렌더링 (캐릭터 프필 가져옴)
-        PlayerImage = EDrow("ImageLabel",{
-            Image = try(PlayerUtil.GetPlayerIcon,PlayerClass.UserId):err(function (errinfo)
+        PlayerImage = PlayerIconIsClass and PlayerIcon or EDrow("ImageLabel",{
+            Image = PlayerIcon or try(PlayerUtil.GetPlayerIcon,PlayerClass.UserId):err(function (errinfo)
                 warn("an error occurred on loading player image");
                 warn(errinfo);
                 return ""; -- error 잡히면 일단 이미지 비움
@@ -85,7 +89,6 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats)
             SizeConstraint = Enum.SizeConstraint.RelativeYY;
             Position = UDim2.new(0,0,0,0);
             BackgroundTransparency = 1;
-            -- 귀찮으니깐 크기는 그냥...
         },{
             -- 둥글게 적용
             EDrow("UICorner",{
@@ -221,6 +224,7 @@ function render:render(Data)
     local PlayerData = Data.Players; -- 플레이어가 담긴 테이블
     local Leaderstats = Data.Leaderstats; -- 플레이어에 대해서 리더스텟 그리기
     local Sort = Data.Sort; -- 플레이어를 정렬하는 함수
+    local GetPlayerIcon = Data.GetPlayerIcon;
 
     -- 정렬하는 함수 있으면 정렬
     if Sort then
@@ -231,7 +235,7 @@ function render:render(Data)
     local list = {};
     list[1] = self.Header(Leaderstats); -- 헤더 그리기
     for DisplayOrder,PlayerClass in pairs(PlayerData) do
-        list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats);
+        list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats,GetPlayerIcon);
     end
 
     -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)

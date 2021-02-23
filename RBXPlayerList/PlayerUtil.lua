@@ -5,12 +5,20 @@
 local module = {}
 local Players = game:GetService("Players")
 
+-- 기본 플레이어 가져오기
 function module:GetPlayers()
-    return Players:GetChildren();
+    return Players:GetPlayers();
+    --return Players:GetChildren();
 end
 
+-- 플레이어 나감, 들어옴을 감지하기
 function module:BindToPlayerChanged(func)
-    local BindRemoving = Players.PlayerRemoving:Connect(func);
+    local BindRemoving = Players.PlayerRemoving:Connect(function ()
+        -- 플레이어가 나가고 플레이어가 Players 서비스에서 제거되려면
+        -- worker 가 한번 돌 수 있도록 양보해야함
+        wait();
+        func();
+    end);
     local BindAdded = Players.PlayerAdded:Connect(func);
     return function () -- unbind
         if BindRemoving then
@@ -24,6 +32,7 @@ function module:BindToPlayerChanged(func)
     end;
 end
 
+-- 기본 플레이어 아이콘 가져오기
 function module.GetPlayerIcon(id)
     return Players:GetUserThumbnailAsync(
         tonumber(id),
