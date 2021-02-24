@@ -52,12 +52,12 @@ function render.MakeToggleButton(Data)
     return Button;
 end
 
-function render:render(Data)
+function render:init(Data)
     -- 플레이어 리스트 담는 스크롤 그리기
-    RenderPlayerListHolder = RenderPlayerListHolder or PlayerListHolder:render(Data.HolderData);
+    RenderPlayerListHolder = PlayerListHolder:render(Data.HolderData);
 
     -- ScreenGui 만들기
-    app = app or EDrow("ScreenGui",{
+    app = EDrow("ScreenGui",{
         Name = "QPlayerList";
         ResetOnSpawn = false;
         ZIndexBehavior = Enum.ZIndexBehavior.Global;
@@ -69,8 +69,18 @@ function render:render(Data)
     });
 
     -- 열고 닫는 버튼 만들기
-    RenderPlayerListTopbarBtn = RenderPlayerListTopbarBtn or self.MakeToggleButton(Data);
+    RenderPlayerListTopbarBtn = self.MakeToggleButton(Data);
 
+    -- 소트 바인딩 넘기기
+    local BindSort = Data.BindSort;
+    if BindSort then
+        BindSort(function ()
+            PlayerListItem.Resort(Data); 
+        end);
+    end
+end
+
+function render:render(Data)
     -- 플레이어 리스트 아이템 만들기
     local ScrollPosX = RenderPlayerListHolder.CanvasPosition; -- 스크롤 위치 저장
     local Items = PlayerListItem:render(Data); -- 아이템 그리기

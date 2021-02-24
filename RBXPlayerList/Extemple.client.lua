@@ -60,8 +60,9 @@ PlayerListSetup.init({
     -- 예시 : Test 라는 리더스텟의 값에 따라 정렬하기
     -- Sort = function (list)
     --     table.sort(list,function (a,b)
-    --         return a.Leaderstats.Test.Value < b.Leaderstats.Test.Value;
+    --         return a.leaderstats.Test.Value < b.leaderstats.Test.Value;
     --     end)
+    --     return list;
     -- end;
     Sort = function (list)
         table.sort(list,function (a,b)

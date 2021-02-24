@@ -16,6 +16,10 @@ local PlayerList = require(script.Parent.PlayerList);
 local PlayerUtil = require(script.Parent.PlayerUtil);
 
 function module.init(Data)
+    -- 초기화
+    PlayerList:init(Data);
+
+    -- 렌더 함수 만들기
     local function Render()
         Data.Players = Data.GetPlayerFunc and Data.GetPlayerFunc() or PlayerUtil:GetPlayers();
         PlayerList:render(Data);

@@ -227,18 +227,12 @@ function render.Resort(Data)
     end
 
     LastPlayers = Sort(LastPlayers);
-
-    print(LastPlayers);
     for DisplayIndex,PlayerClass in pairs(LastPlayers) do
         local ListItem = LastRender[PlayerClass];
-        print(ListItem);
         if ListItem then
             ListItem.LayoutOrder = DisplayIndex;
         end
     end
-
-    print "resort!";
-
     return true;
 end
 
