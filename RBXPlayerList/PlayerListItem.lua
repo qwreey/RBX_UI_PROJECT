@@ -226,10 +226,12 @@ function render.Resort(Data)
         return nil;
     end
 
-    Sort(LastPlayers);
+    LastPlayers = Sort(LastPlayers);
 
+    print(LastPlayers);
     for DisplayIndex,PlayerClass in pairs(LastPlayers) do
         local ListItem = LastRender[PlayerClass];
+        print(ListItem);
         if ListItem then
             ListItem.LayoutOrder = DisplayIndex;
         end
