@@ -33,7 +33,7 @@ PlayerListSetup.init({
     --     for Index,Player in pairs(game.Players:GetPlayers()) do
     --         list[Index] = {
     --             Name = "????";
-    --             UserId = Player;
+    --             UserId = Player.UserId;
     --             leaderstats = Player:WaitForChild("leaderstats");
     --         }
     --     end
@@ -76,7 +76,7 @@ PlayerListSetup.init({
     -- 순서가 변경됩니다
     -- 주의 : 이 설정이 true 이면 많은 리더스텟을 포함하고 많은 인원이 존제하는 게임의 경우 많은 리소스를 소비 할 수 있습니다
     --        만약 극한의 리소스 절약이 필요한 경우 메인 코드를 수정하세요
-    ResortOnLeaderstatsChanged = false;
+    ResortOnLeaderstatsChanged = true;
 
     -- 그룹 랭크에 따라 소팅하는 것 처럼
     -- 완전히 커스텀된 소팅 방법을 사용하는 경우

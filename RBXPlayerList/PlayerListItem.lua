@@ -1,4 +1,4 @@
-local render = {}
+local render = {};
 
 --#region Load libs
 local rojo = game:GetService("ReplicatedStorage"):WaitForChild("rojo")
@@ -18,6 +18,8 @@ local Vector2 = Vector2;
 
 --#region Settings / Global
 local GlobalFont = Enum.Font.Gotham;
+local GlobalBoldFont = Enum.Font.GothamBold;
+local LocalPlayer = game:GetService("Players").LocalPlayer or {Name = nil,UserId = nil;};
 --#endregion
 
 --#region EDrow 대충 설명
@@ -41,6 +43,7 @@ local GlobalFont = Enum.Font.Gotham;
 
 local Connection = {}; -- 나중에 이걸로 바인딩 지움
 local LastRender = {}; -- 나중에 이걸로 UI 지움
+local LastPlayers = {};
 
 ---@param PClass userdata Player Instance
 ---@param DisplayIndex integer Display Order
@@ -48,11 +51,11 @@ local LastRender = {}; -- 나중에 이걸로 UI 지움
 ---@param GetPlayerIcon function GetPlayerIcon function (nil = default)
 ---@return userdata Instance RUI-Render Object
 ---@see 플레이어 리스트 아이템 하나 그리기
-function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon)
+function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon,LeaderstatsChanged)
     local PlayerIcon = GetPlayerIcon and GetPlayerIcon(PlayerClass) or nil;
-    local PlayerIconIsClass = type(PlayerIcon) ~= "nil" and type(PlayerIcon) ~= "string"
+    local PlayerIconIsClass = type(PlayerIcon) ~= "nil" and type(PlayerIcon) ~= "string";
 
-    local Store = {}
+    local Store = {};
     return EDrow("ImageLabel",{
         BackgroundTransparency = 1;
         Size = UDim2.new(1,0,0,28);
@@ -67,13 +70,15 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon)
         PlayerNameLabel = EDrow("TextLabel",{
             Text = PlayerClass.Name;
             TextSize = 14;
-            Font = GlobalFont;
+            -- 나면 굵은 글씨채 적용
+            Font = (PlayerClass.ClassName == "Player" and LocalPlayer.UserId == PlayerClass.UserId) and GlobalBoldFont or GlobalFont;
             TextColor3 = Color3.fromRGB(255,255,255);
             BackgroundTransparency = 1;
             Size = UDim2.new(1,-32,1,0);
             Position = UDim2.fromOffset(32,0);
             TextXAlignment = Enum.TextXAlignment.Left;
             TextTruncate = Enum.TextTruncate.AtEnd;
+            ClipsDescendants = true;
             WhenCreated = function (this)
                 Store.NameText = this;
             end;
@@ -116,6 +121,7 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon)
                         TextSize = 11;
                         Text = "";
                         ClipsDescendants = true;
+                        TextTruncate = Enum.TextTruncate.AtEnd;
                         BackgroundTransparency = 1;
                         TextColor3 = Color3.fromRGB(255,255,255);
                     },{
@@ -129,12 +135,12 @@ function render.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon)
                         });
                     });
 
-                    local function Refresh()
+                    -- 값 바뀜
+                    Connection[#Connection+1] = Stats.BindToChanged(PlayerClass,function ()
                         Label.Text = Stats.GetValue(PlayerClass);
-                    end
-                    
-                    Connection[#Connection+1] = Stats.BindToChanged(PlayerClass,Refresh);
-                    Refresh();
+                        LeaderstatsChanged()
+                    end);
+                    Label.Text = Stats.GetValue(PlayerClass);
                 end
                 
                 -- 이름 크기지정
@@ -214,9 +220,25 @@ function render.Header(Leaderstats)
 end
 
 ---@see 제정렬, 리더스탯을 순서로 하면 이게 필요해짐
-function render.Sort(Data)
+function render.Resort(Data)
+    local Sort = Data.Sort;
+    if not Sort then
+        return nil;
+    end
 
-end;
+    Sort(LastPlayers);
+
+    for DisplayIndex,PlayerClass in pairs(LastPlayers) do
+        local ListItem = LastRender[PlayerClass];
+        if ListItem then
+            ListItem.LayoutOrder = DisplayIndex;
+        end
+    end
+
+    print "resort!";
+
+    return true;
+end
 
 --@param PData table Player Data array
 --@return table Array RUI-Render Object Array
@@ -229,31 +251,39 @@ function render:render(Data)
     local PlayerData = Data.Players; -- 플레이어가 담긴 테이블
     local Leaderstats = Data.Leaderstats; -- 플레이어에 대해서 리더스텟 그리기
     local Sort = Data.Sort; -- 플레이어를 정렬하는 함수
-    local GetPlayerIcon = Data.GetPlayerIcon;
+    local ResortOnLeaderstatsChanged = Data.ResortOnLeaderstatsChanged; -- 리더스텟 바뀔때 리솔트 할지 여부
+    local GetPlayerIcon = Data.GetPlayerIcon; -- 플레이어 아이콘 가져오는 함수
+    LastPlayers = PlayerData;
 
     -- 정렬하는 함수 있으면 정렬
     if Sort then
         PlayerData = Sort(PlayerData);
     end
 
+    -- 리더스텟 바뀜 (정렬용)
+    local function LeaderstatsChanged()
+        if ResortOnLeaderstatsChanged and Sort then
+            self.Resort(Data);
+        end
+    end
+
     -- 그리기
     local list = {};
-    list[1] = self.Header(Leaderstats); -- 헤더 그리기
-    for DisplayOrder,PlayerClass in pairs(PlayerData) do
-        list[DisplayOrder + 1] = self.PlayerItem(PlayerClass,DisplayOrder,Leaderstats,GetPlayerIcon);
+    list["Header"] = self.Header(Leaderstats); -- 헤더 그리기
+    for DisplayIndex,PlayerClass in pairs(PlayerData) do
+        list[PlayerClass] = self.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon,LeaderstatsChanged);
     end
 
     -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)
     for Index,Unbind in pairs(OldConnection) do
         if Unbind then
-            Unbind()
+            Unbind();
         end
         Connection[Index] = nil;
     end
     -- 이전 UI 제거
-    for Index,Item in pairs(LastRender) do
+    for _,Item in pairs(LastRender) do
         Item:Destroy();
-        LastRender[Index] = nil;
     end
 
     LastRender = list; -- 나중에 지울 수 있게 만들기

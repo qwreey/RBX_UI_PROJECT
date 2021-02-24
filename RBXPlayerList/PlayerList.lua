@@ -74,7 +74,7 @@ function render:render(Data)
     -- 플레이어 리스트 아이템 만들기
     local ScrollPosX = RenderPlayerListHolder.CanvasPosition; -- 스크롤 위치 저장
     local Items = PlayerListItem:render(Data); -- 아이템 그리기
-    for I,Render in pairs(Items) do
+    for _,Render in pairs(Items) do
         Render.Parent = RenderPlayerListHolder;
     end
     PlayerListHolder.RefreshLayout(); -- 리스트 길이 리프레시
