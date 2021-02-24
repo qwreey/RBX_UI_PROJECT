@@ -1,3 +1,5 @@
+-- TODO : 헤더 부분 편집할수 있도록 API 수정
+
 --#region Load libs
 local rojo = game:GetService("ReplicatedStorage"):WaitForChild("rojo")
 local MaterialUI if false then MaterialUI = require("MaterialUI.init"); end
@@ -93,7 +95,6 @@ PlayerListSetup.init({
     --     end)
     -- end;
     BindSort = nil;
-    -- TODO 연결
 
     -- 만약 플레이어 아이콘을 조작하고 싶다면 여기에 함수를 추가하세요
     -- 그러면 아이콘을 불러올때 이 함수를 호출합니다
@@ -129,6 +130,38 @@ PlayerListSetup.init({
     -- end;
     -- 이 설정란이 비어있으면 PlayerUtil.lua 에 GetPlayerIcon 함수가 자동으로 사용됩니다
     GetPlayerIcon = nil;
+
+    -- 만약 플레이어 아이템 하나하나를 꾸미고 싶다면 (뭐 배경 사진을 넣는다던가, 기본 모양을 바꾼다던가 등등)
+    -- 여기에 함수를 넣어서 바꿀 수 있습니다, 아이템 하나가 렌더된 후 호출됩니다
+    -- 인자로 UI 개체,플레이어 를 넘겨줍니다
+    -- [이 기능은 실험적이며 예상치 못한 결과를 불러올 수 있습니다]
+    --
+    -- 예시 : 프레임 하나 UI 배경으로 추가하기
+    -- EditItem = function (UI,Player)
+    --     EDrow("Frame",{
+    --         Parent = UI;
+    --         Size = UDim2.fromScale(1,1);
+    --         ZIndex = -5;
+    --     });
+    --     return;
+    -- end;
+    EditItem = nil;
+
+    -- 만약 헤더 부분 (Name 리더스탯 같이 맨 위에 있는 라벨)을 꾸미고 싶다면 (위에처럼 배경 사진을 넣는다던가, 기본 모양을 바꾼다던가)
+    -- 여기에 함수를 넣어서 바꿀 수 있습니다, 헤더가 렌더 된 후 호출됩니다
+    -- 인자로 UI 개체, 리더스텟 정보를 넘겨줍니다
+    -- [이 기능은 실험적이며 예상치 못한 결과를 불러올 수 있습니다]
+    --
+    -- 예시 : 프레임 하나 UI 배경으로 추가하기
+    -- EditHeader = function (UI,LeaderstatsData)
+    --     EDrow("Frame",{
+    --         Parent = UI;
+    --         Size = UDim2.fromScale(1,1);
+    --         ZIndex = -5;
+    --     });
+    --     return;
+    -- end;
+    EditHeader = nil;
 
     -- 리더보드를 불러오는 방법을 조정합니다, 비어있으면 리더보드가 출력되지 않습니다
     Leaderstats = {

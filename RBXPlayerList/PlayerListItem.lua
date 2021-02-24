@@ -249,6 +249,8 @@ function render:render(Data)
     local Sort = Data.Sort; -- 플레이어를 정렬하는 함수
     local ResortOnLeaderstatsChanged = Data.ResortOnLeaderstatsChanged; -- 리더스텟 바뀔때 리솔트 할지 여부
     local GetPlayerIcon = Data.GetPlayerIcon; -- 플레이어 아이콘 가져오는 함수
+    local EditItem = Data.EditItem; -- 플레이어 아이템 편집 함수(테마라던가)
+    local EditHeader = Data.EditHeader; -- 헤더 부분 편집 함수(글자 색깔이라던가)
     LastPlayers = PlayerData;
 
     -- 정렬하는 함수 있으면 정렬
@@ -265,9 +267,17 @@ function render:render(Data)
 
     -- 그리기
     local list = {};
-    list["Header"] = self.Header(Leaderstats); -- 헤더 그리기
+    local header = self.Header(Leaderstats); -- 헤더 그리기
+    if EditHeader then
+        EditHeader(header,Leaderstats);
+    end
+    list["Header"] = header;
     for DisplayIndex,PlayerClass in pairs(PlayerData) do
-        list[PlayerClass] = self.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon,LeaderstatsChanged);
+        local new = self.PlayerItem(PlayerClass,DisplayIndex,Leaderstats,GetPlayerIcon,LeaderstatsChanged);
+        if EditItem then
+            EditItem(new,PlayerClass);
+        end
+        list[PlayerClass] = new;
     end
 
     -- 이전 커넥션 제거 (리더스텟 바뀜 트래킹이라던가)
