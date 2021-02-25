@@ -2,8 +2,9 @@
 -- 플레이어 가져오기
 -- 등의 플레이어 핸들링을 위한 라이브러리
 
-local module = {}
-local Players = game:GetService("Players")
+local module = {};
+local Players = game:GetService("Players");
+local GuiService = game:GetService("GuiService");
 
 -- 기본 플레이어 가져오기
 function module:GetPlayers()
@@ -39,6 +40,11 @@ function module.GetPlayerIcon(id)
         Enum.ThumbnailType.HeadShot,
         Enum.ThumbnailSize.Size60x60
     );
+end
+
+-- 아바타 정보보기 열기
+function module.ExamineAvatar(id)
+    GuiService:InspectPlayerFromUserId(id);
 end
 
 return module;
