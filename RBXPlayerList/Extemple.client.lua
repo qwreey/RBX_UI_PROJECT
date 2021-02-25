@@ -205,6 +205,10 @@ PlayerListSetup.init({
         BlockButton = true; -- 차단 추가/제거 버튼
     };
 
+    -- 친구인 플레이어는 친구 아이콘을 띄워즘
+    -- 블럭된 플레이어는 X 표시 띄워줌
+    EnableInfoIcon = true;
+
     -- 홀더 크기, 위치에 관한 설정입니다
     -- Close 가 붙은 프로퍼티는 창이 닫힐 때 사용되는 프로퍼티입니다
     -- 닫힘 효과를 더 조정하고 싶다면 PlayerList.lua 를 편집하세요
