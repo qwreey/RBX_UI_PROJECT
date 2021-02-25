@@ -21,7 +21,7 @@ function render:render(app)
         ZIndex = -5;
         Size = UDim2.fromOffset(32,32);
         AnchorPoint = Vector2.new(1,0);
-        Position = UDim2.new(1,-55,0,-32);
+        Position = UDim2.new(1,-60,0,-32);
         MouseEnter = function ()
             Hover.Visible = true;
         end;
