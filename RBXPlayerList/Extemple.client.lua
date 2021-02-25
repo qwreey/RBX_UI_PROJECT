@@ -207,6 +207,7 @@ PlayerListSetup.init({
 
     -- 친구인 플레이어는 친구 아이콘을 띄워즘
     -- 블럭된 플레이어는 X 표시 띄워줌
+    -- [아직 구현되지 않음]
     EnableInfoIcon = true;
 
     -- 홀더 크기, 위치에 관한 설정입니다
