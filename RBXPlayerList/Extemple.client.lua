@@ -220,4 +220,4 @@ PlayerListSetup.init({
         ClosePosition = UDim2.new(1,-8,0,-40);
         CloseAnchorPoint = Vector2.new(1,1);
     };
-})
+});
