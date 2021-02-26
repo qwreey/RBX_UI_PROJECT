@@ -170,11 +170,11 @@ PlayerListSetup.init({
             Size = 50; -- 이 리더보드가 가지는 X 크기 (너비)
             GetValue = function (Player) -- 값을 가져오는 함수
                 -- 해당 값을 반환하면 됩니다
-                return tostring((Player.leaderstats or Player:WaitForChild("leaderstats")):WaitForChild("Test").Value);
+                return tostring((type(Player) == "table" and Player.leaderstats or Player:WaitForChild("leaderstats")):WaitForChild("Test").Value);
             end;
             BindToChanged = function (Player,func)
                 -- 값이 바뀌였을때 함수를 실행해주면 됩니다
-                local Connect = (Player.leaderstats or Player:WaitForChild("leaderstats")):WaitForChild("Test"):GetPropertyChangedSignal("Value"):Connect(func);
+                local Connect = (type(Player) == "table" and Player.leaderstats or Player:WaitForChild("leaderstats")):WaitForChild("Test"):GetPropertyChangedSignal("Value"):Connect(func);
                 
                 -- return unbind function
                 -- 그리고 이 연결을 끊어주는 함수를 반환하면 됩니다
