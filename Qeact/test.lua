@@ -1,0 +1,1 @@
+Qeact = require("Qeact"); FrameEl = Qeact.importElement("Frame"); print(Qeact:strRender( FrameEl {Name = "Hello",New = FrameEl {Name = "world"}} ));
