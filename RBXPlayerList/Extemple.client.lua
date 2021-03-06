@@ -210,6 +210,14 @@ PlayerListSetup.init({
     -- [아직 구현되지 않음]
     EnableInfoIcon = true;
 
+    -- 탭키 눌러서 열고 닫기
+    -- [아직 구현되지 않음]
+    TabToToggle = false;
+
+    -- 모바일은 기본으로 닫혀있음(화면 크기 배려)
+    -- [아직 구현되지 않음]
+    AutoCloseOnTouchDevice = false;
+
     -- 홀더 크기, 위치에 관한 설정입니다
     -- Close 가 붙은 프로퍼티는 창이 닫힐 때 사용되는 프로퍼티입니다
     -- 닫힘 효과를 더 조정하고 싶다면 PlayerList.lua 를 편집하세요
