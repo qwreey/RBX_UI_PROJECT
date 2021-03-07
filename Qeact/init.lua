@@ -2,9 +2,9 @@ local script = script;
 local Instance = Instance;
 
 local Qeact = {
-    importElement = require(script and script.Parent.importElement or "Qeact/importElement");
+    importElement = require(script and script.importElement or "Qeact/importElement");
     makeInstanceFunc = function (className,Parent)
-        return Instance(className,Parent);
+        return Instance.new(className,Parent);
     end;
 };
 
@@ -42,7 +42,7 @@ function Qeact:rbxRender(Element,Parent) -- render for roblox ui
 
         if ValueType == "table" and Value.IsElement then -- 엘리멘트 (내부 children)
             Value.Name = IndexType == "string" and Index or Value.Name;
-            self:render(Value,this); -- 렌더링
+            self:rbxRender(Value,this); -- 렌더링
         elseif IndexType == "string" then -- 프로퍼티, 이벤트
             if ValueType == "function" then -- 이벤트
                 if Index ~= "WhenCreated" then
@@ -67,7 +67,7 @@ end
 -- 글자 렌더러 (트리 뷰, 디버깅용)
 local strRender;
 function Qeact:strRender(Element)
-    strRender = strRender or require(script and script.Parent.stringRender or "Qeact/stringRender");
+    strRender = strRender or require(script and script.stringRender or "Qeact/stringRender");
     return strRender(Element);
 end
 

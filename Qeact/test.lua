@@ -2,7 +2,7 @@
 
 -- LUA 에서 선언형 프로그래밍
 
-Qeact = require("../Qeact");
+Qeact = require(game and game.ReplicatedStorage:WaitForChild("rojo"):WaitForChild("Qeact") or "../Qeact");
 FrameEl = Qeact.importElement("Frame"); -- 프레임 사용을 선언
 TextButtonEl = Qeact.importElement("TextButton"); -- 텍스트 버튼 사용을 선언
 
@@ -27,4 +27,4 @@ local e = FrameEl { -- 프레임을 만듬
 };
 
 print(Qeact:strRender(e)); -- 디버깅을 위한 글자 렌더링
-Qeact:rbxRender(e,worksapce); -- 렌더 시작 (테이블 => 개체)
+Qeact:rbxRender(e,workspace); -- 렌더 시작 (테이블 => 개체)
