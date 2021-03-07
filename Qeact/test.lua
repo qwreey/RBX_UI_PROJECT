@@ -16,6 +16,7 @@ local e = FrameEl { -- 프레임을 만듬
     Size = UDim2.new(1,0,1,0); -- 크기를 1,0,1,0 으로 지정
     New = TextButtonEl { -- 그 안에 텍스트를 하나 더 만듬
         Text = "world"; -- 텍스트를 world 로 지정
+        Size = UDim2.new(0,25,0,25);
         WhenCreated = function (this)
             -- 이 함수는 rbxRender 가 동작할 때 이루워짐
             print(this); -- 이 텍스트를 프린트함
