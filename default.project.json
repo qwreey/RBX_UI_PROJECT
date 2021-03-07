@@ -45,6 +45,10 @@
 				"RBXPlayerList": {
 					"$path": "RBXPlayerList",
 					"$ignoreUnknownInstances": true
+				},
+				"Qeact": {
+					"$path": "Qeact",
+					"$ignoreUnknownInstances": true
 				}
 			}
 		}

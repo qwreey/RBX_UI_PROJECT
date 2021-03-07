@@ -29,7 +29,7 @@ local function strRender(Element) -- render for string tree
             if ValueType == "function" then -- 이벤트
                 this = this .. ("%s%s%s = \"&Event\";"):format(LF,Tab,Index);
             elseif not IgnoreProperties[Index] then -- 프로퍼티
-                this = this .. ("%s%s%s = Event;"):format(LF,Tab,Index);
+                this = this .. ("%s%s%s = %s;"):format(LF,Tab,Index,tostring(Value));
             end
         end
     end
