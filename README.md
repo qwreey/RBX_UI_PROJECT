@@ -25,4 +25,5 @@ CustomScroll 는 AdvancedTween 에 종속성이 있습니다, CustomScroll 를 �
 RBXPlayerList 는 AdvancedTween,MaterialUI 에 종속성이 있습니다, RBXPlayerList 를 사용하려면 종속 모듈들을 같이 설치해야합니다  
 
 필요한거 알아서 골라쓰세요  
-어차피 거의 다 코드 몇백줄 이내라 몇분안에 읽기 ㄱㄴ  
+어차피 거의 다 코드 몇백줄 이내라 몇분안에 읽기 ㄱㄴ하고 주석도 많이 있어서 코드 구조도 쉽게 파악할 수 있어요  
+이게 어렵다면 뭐... 그냥 본인 코딩 실력이 받혀주지 못하는것이고  
