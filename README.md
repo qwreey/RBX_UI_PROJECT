@@ -6,6 +6,11 @@ roblox UI 를 위한 몇가지 모듈들 모음
 Advanced Tween 나 Qeact 같은 모듈들은 로블록스 lua 환경 이외에 love 2d 나 코로나 SDK 같은 다른 엔진으로도 이식이 어느정도 가능합니다  
 아직 문서는 없음, 시간이 없어요; 나중에 좀 시간 나면 그때 mkdocs 페이지 만들어 드립니다  
 
+rojo 로 빌드하세요  
+rojo 말고 빌드할 방법 없습니다  
+https://rojo.space/  
+
+일단 수록된 모듈 리스트는  
 맨 위에서 부터 시작해서  
 
 AdvancedTween : 커스터마이징 가능한 트윈이팩트  
