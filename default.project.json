@@ -30,8 +30,8 @@
 				"CWait": {
 					"$path": "CWait"
 				},
-				"SectionsTextLable": {
-					"$path": "SectionsTextLable"
+				"SectionsTextLabel": {
+					"$path": "SectionsTextLabel"
 				},
 				"DumpTable": {
 					"$path": "DumpTable"
