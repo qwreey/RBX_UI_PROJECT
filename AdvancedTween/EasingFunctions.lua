@@ -13,7 +13,7 @@ EasingFunctions["Linear"] = Linear
 
 local Circle = {} do
 	Circle.Run = function(Index)
-		return 1-(Index^2)
+		return 1-((1-Index)^2)
 	end
 end
 EasingFunctions["Circle"] = Circle
