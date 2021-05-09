@@ -1537,9 +1537,7 @@ function module.IndeterminateCircle_New(Parent)
 	local Setter = {
 		ZIndex = function(Value)
 			Obj.ZIndex = Value
-			for _,v in pairs(Holder:GetChildren()) do
-				v.ZIndex = Value
-			end
+			Holder.ZIndex = Value
 		end;
 		Disabled = function(Value)
 			Data.Disabled = Value
