@@ -101,4 +101,4 @@ function renderClass:draw(thing)
     self.drawROOT = nil;
 end
 
-return renderClass.new(),renderClass;
+return renderClass;
