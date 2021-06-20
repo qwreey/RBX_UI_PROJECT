@@ -52,11 +52,11 @@ function renderClass:getObject(name)
     return self.storage[name];
 end
 
-function renderClass:addClass(newClassFunction)
+function renderClass:addClass(className,newClassFunction)
     if renderClass == self or (not self) then
         error("you can't use this function on none inited class, using className.new() for using this function");
     end
-    table.insert(self.class,newClassFunction);
+    self.class[className] = newClassFunction;
 end
 
 function renderClass:import(ClassName)
