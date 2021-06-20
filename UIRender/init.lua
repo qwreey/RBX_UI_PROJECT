@@ -86,7 +86,7 @@ function renderClass:draw(thing)
     end
     if type(thing) == "table" then
         for _,nthing in pairs(thing) do
-            self:draw(thing);
+            self:draw(nthing);
         end
     else
         if thing:IsA("ScreenGui") then
