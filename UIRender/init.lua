@@ -12,6 +12,7 @@ function renderClass.new(settings)
     this.class = settings.class or {};
 
     setmetatable(this,renderClass);
+    return this;
 end
 
 function renderClass:newObject(ClassName,prop)
