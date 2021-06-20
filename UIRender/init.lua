@@ -1,5 +1,5 @@
 local renderClass = {};
-renderClass.__index = {};
+renderClass.__index = renderClass;
 
 function renderClass.new(settings)
     if settings == renderClass then
