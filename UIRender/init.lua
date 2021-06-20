@@ -81,6 +81,9 @@ function renderClass:draw(thing)
     if renderClass == self or (not self) then
         error("you can't use this function on none inited class, using className.new() for using this function");
     end
+    if thing == nil then
+        error("thing must be not nil!");
+    end
     if type(thing) == "table" then
         for _,nthing in pairs(thing) do
             self:draw(thing);
