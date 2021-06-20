@@ -74,7 +74,7 @@ function renderClass:draw(thing)
     if thing:IsA("ScreenGui") then
       thing.Parent = game:GetService("Players").LocalPlayer:WaitForChild("PlayerGui");
     elseif self.uiHolder then
-      thing.Parent = uiHolder
+      thing.Parent = self.uiHolder;
     else
       local drawROOT = self.drawROOT or new("ScreenGui",{
         ResetOnSpawn = false;
