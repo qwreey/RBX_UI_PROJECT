@@ -7,9 +7,16 @@ function renderClass.new(settings)
     end
     settings = settings or {};
     local this = {};
-    this.storage = settings.storage or {};
+    this.objects = {};
+    this.storage = {};
     this.uiHolder = settings.uiHolder;
     this.class = settings.class or {};
+    this.debug = settings.debug or warn or print;
+    this.frameRequest = settings.frameRequest or function (func)
+        local run = game:GetService("RunService");
+        local c = run.Heartbeat:Connect(func);
+        return function () c:Disconnect(); end
+    end);
 
     setmetatable(this,renderClass);
     return this;
@@ -42,6 +49,7 @@ function renderClass:newObject(ClassName,prop)
     if whenCreated then
         whenCreated(new);
     end
+    table.insert(self.objects,new);
     return new;
 end
 
@@ -103,6 +111,83 @@ function renderClass:draw(thing)
         end
     end
     self.drawROOT = nil;
+end
+
+local c = os.clock;
+local animationClass = {};
+animationClass.__index = animationClass;
+
+function animationClass:play()
+    if self:isPlaying() then
+        self.render.debug("[WARN] render : something try to play already running animation. ignore this call");
+    end
+    local st = c();
+    self.isPlaying = self.render.frameRequest(function ()
+        self.func(c() - st);
+    end);
+    self.setTimeFunction = function (t)
+        st = c() - t;
+    end;
+end
+
+function animationClass:isPlaying()
+    return self.isPlaying ~= nil;
+end
+
+function animationClass:stop()
+    local unbind = self.isPlaying;
+    if unbind then
+        self.isPlaying = nil;
+        self.setTime = nil;
+        return unbind();
+    else
+        self.render.debug("[WARN] render : something try to stop already non-running animation. ignore this call");
+        return nil;
+    end
+end
+
+function animationClass:setTime(t)
+    local set = self.setTimeFunction;
+    if not set then
+        self.render.debug("[WARN] render : something try to set animation running time for non-running animation. ignore this call");
+        return;
+    end
+    set(t);
+end
+
+function animationClass:destroy()
+    if self:isPlaying() then
+        self:stop();
+    end
+    self.setTime = nil;
+    self.render = nil;
+    self.func = nil;
+    self.isPlaying = nil;
+    setmetatable(self,nil);
+end
+function animationClass:Destroy()
+    self:destroy();
+end
+
+function animationClass.new(func,render)
+    local this = {};
+
+    this.func = func;
+    this.render = render;
+    this.isPlaying = nil;
+
+    setmetatable(this,animationClass);
+    return this;
+end
+
+function renderClass:makeAnimation(func)
+    return animationClass.new(func,self);
+end
+
+function renderClass:cleanup()
+    for _,v in pairs(self.objects) do
+        pcall(v.Destroy,v);
+    end
 end
 
 return renderClass;
