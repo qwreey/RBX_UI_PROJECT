@@ -408,7 +408,7 @@ local module = {
 				ZIndex = 1;
 			};
 			["RadioButton"] = {
-				RippleColor3 = Color3.fromRGB(255,255,255);
+				RippleColor3 = Color3.fromRGB(0,0,0);
 				OffColor3 = Color3.fromRGB(180,180,180);
 				OnColor3 = Color3.fromRGB(0,120,255);
 				SortOrder = Enum.SortOrder.LayoutOrder;
