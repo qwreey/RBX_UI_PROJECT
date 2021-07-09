@@ -16,7 +16,7 @@ function renderClass.new(settings)
         local run = game:GetService("RunService");
         local c = run.Heartbeat:Connect(func);
         return function () c:Disconnect(); end
-    end);
+    end;
 
     setmetatable(this,renderClass);
     return this;
@@ -42,7 +42,7 @@ function renderClass:newObject(ClassName,prop)
             end
         elseif indexType == "string" then
             -- property
-            new[index] = value
+            new[index] = value;
         end
     end
     local whenCreated = prop["whenCreated"];
