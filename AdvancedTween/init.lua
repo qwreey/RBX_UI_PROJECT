@@ -132,7 +132,7 @@ function module:RunTween(Item,Data,Properties,Ended)
 	local CallBack = Data.CallBack
 	if CallBack then
 		for FncIndex,Fnc in pairs(CallBack) do
-			if type(Fnc) ~= "function" or type(tonumber(FncIndex)) ~= "number" then
+			if type(Fnc) ~= "function" or (type(tonumber(FncIndex)) ~= "number" and FncIndex ~= "*") then
 				CallBack[FncIndex] = nil
 			end
 		end
@@ -208,8 +208,10 @@ function module:RunTween(Item,Data,Properties,Ended)
 		-- 중간 중간 함수 배정된것 실행
 		if CallBack then
 			for FncIndex,Fnc in pairs(CallBack) do
-				if tonumber(FncIndex) <= Index then
-					Fnc()
+				if FncIndex == "*" then
+					Fnc(Index)
+				elseif tonumber(FncIndex) <= Index then
+					Fnc(Index)
 					CallBack[FncIndex] = nil
 				end
 			end
