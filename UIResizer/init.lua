@@ -19,22 +19,22 @@ function ReleaserB()
 	return n
 end
 
-function module:SetResizer(Main,Settings)
-	
+function module.SetResizer(Main,Settings)
+
 	--Settings.CheckResizable
-	
+
 	local HandleC = {}
-	
+
 	local ReturnData = {}
 	local Sizing = false
 	local Releaser = nil
 	local Face = ""
-	
+
 	local ResizeStarted = Instance.new("BindableEvent",script)
 	local ResizeEnded = Instance.new("BindableEvent",script)
 	ReturnData.ResizeStarted = ResizeStarted.Event
 	ReturnData.ResizeEnded = ResizeEnded.Event
-	
+
 	local Size = Main.Size
 	local ABS_Size = Main.AbsoluteSize
 	local Fx
@@ -46,21 +46,21 @@ function module:SetResizer(Main,Settings)
 
 	local function Move(xx, yy)
 		if Sizing then
-			local X  = math.clamp(xx - Fx,MinX,Mouse.ViewSizeX)
-			local Y  = math.clamp(yy - Fy,MinY,Mouse.ViewSizeY)
-			
-			local RX = math.clamp(Size.X.Offset-(xx - Fx - Size.X.Offset),MinX,Mouse.ViewSizeX)
-			local RY = math.clamp(Size.Y.Offset-(yy - Fy - Size.Y.Offset),MinY,Mouse.ViewSizeY)
-			
+			local X  = math.min(math.max(xx-Fx,MinX),Mouse.ViewSizeX)
+			local Y  = math.min(math.max(yy-Fy,MinY),Mouse.ViewSizeY)
+
+			local RX = math.min(math.max(Size.X.Offset-(xx - Fx - Size.X.Offset),MinX),Mouse.ViewSizeX)
+			local RY = math.min(math.max(Size.Y.Offset-(yy - Fy - Size.Y.Offset),MinY),Mouse.ViewSizeY)
+
 			local RPosX = Pos.X.Offset-RX+ABS_Size.X
 			local RPosY = Pos.Y.Offset-RY+ABS_Size.Y
-			
+
 			if Face == "B" then
 				Main.Size = UDim2.new(Size.X.Scale, Size.X.Offset, Size.Y.Scale, Y)
 			elseif Face == "T" then
 				Main.Size = UDim2.new(Size.X.Scale, Size.X.Offset, Size.Y.Scale, RY)
 				Main.Position = UDim2.new(Pos.X.Scale,Pos.X.Offset,Pos.Y.Scale,RPosY)
-				
+
 			elseif Face == "R" then
 				Main.Size = UDim2.new(Size.X.Scale, X, Size.Y.Scale, Size.Y.Offset)
 			elseif Face == "RB" then
@@ -68,7 +68,7 @@ function module:SetResizer(Main,Settings)
 			elseif Face == "RT" then
 				Main.Size = UDim2.new(Size.X.Scale, X, Size.Y.Scale, RY)
 				Main.Position = UDim2.new(Pos.X.Scale,Pos.X.Offset,Pos.Y.Scale,RPosY)
-				
+
 			elseif Face == "L" then
 				Main.Size = UDim2.new(Size.X.Scale, RX, Size.Y.Scale, Size.Y.Offset)
 				Main.Position = UDim2.new(Pos.X.Scale,RPosX,Pos.Y.Scale,Pos.Y.Offset)
@@ -90,7 +90,7 @@ function module:SetResizer(Main,Settings)
 			Releaser = nil
 		end
 	end
-	
+
 	local function Down(xx, yy)
 		if Settings.CheckResizable then
 			if not Settings.CheckResizable() then
@@ -104,7 +104,7 @@ function module:SetResizer(Main,Settings)
 		Fx = xx - Size.X.Offset
 		Fy = yy - Size.Y.Offset
 		Pos = Main.Position
-		
+
 		Releaser = ReleaserB()
 		Releaser.MouseMoved:connect(function(x, y) Move(x, y) end)
 		Releaser.MouseButton1Up:connect(Up)
@@ -122,12 +122,12 @@ function module:SetResizer(Main,Settings)
 			return New
 		end
 	end
-	
+
 	function ReturnData:IsResizing()
 		-- get is resizing
 		return Sizing
 	end
-	
+
 	function ReturnData:Destroy()
 		Settings = nil
 		for _,Connect in pairs(HandleC) do
@@ -166,24 +166,24 @@ function module:SetResizer(Main,Settings)
 		ReturnData.ResizeStarted = nil
 		ReturnData.ReturnData = nil
 		ReturnData.SetToHandle = nil
-		
+
 		ReturnData = nil
 		return nil
 	end
-	
+
 	if Settings.Handle then
 		ReturnData:SetToHandle("B" ,Settings.Handle.B )
 		ReturnData:SetToHandle("T" ,Settings.Handle.T )
-		
+
 		ReturnData:SetToHandle("L" ,Settings.Handle.L )
 		ReturnData:SetToHandle("LB",Settings.Handle.LB)
 		ReturnData:SetToHandle("LT",Settings.Handle.LT)
-		
+
 		ReturnData:SetToHandle("R" ,Settings.Handle.R )
 		ReturnData:SetToHandle("RB",Settings.Handle.RB)
 		ReturnData:SetToHandle("RT",Settings.Handle.RT)
 	end
-	
+
 	return ReturnData
 end
 
